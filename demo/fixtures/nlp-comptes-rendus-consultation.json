@@ -1,0 +1,52 @@
+{
+  "source": "nlp",
+  "table": "comptes_rendus_consultation",
+  "extraitLe": "2026-10-01T02:00:00",
+  "lignes": [
+    {
+      "EXTRACTION_ID": "NLP-0001",
+      "PATIENT_ID": "99000002",
+      "ENTITY": "performance_status",
+      "TEXT_SPAN": "Etat général conservé, PS 1",
+      "VALUE": "1",
+      "CONFIDENCE": 0.87,
+      "DOCUMENT_ID": "DX-DOC-5678",
+      "DOCUMENT_SYSTEM": "dxcare",
+      "DOCUMENT_TYPE": "consultation-report",
+      "DOCUMENT_URL": "https://dpi.example.test/documents/DX-DOC-5678",
+      "DOCUMENT_DATE": "2026-09-12",
+      "DOCUMENT_AUTHOR": "MED-0233",
+      "EXTRACTED_AT": "2026-09-13T02:00:00"
+    },
+    {
+      "EXTRACTION_ID": "NLP-0002",
+      "PATIENT_ID": "99000002",
+      "ENTITY": "t_stage",
+      "TEXT_SPAN": "Bilan d'extension : cT3 cN2 M0",
+      "VALUE": "cT3",
+      "CONFIDENCE": 0.91,
+      "DOCUMENT_ID": "SB-DOC-0002",
+      "DOCUMENT_SYSTEM": "simbad",
+      "DOCUMENT_TYPE": "consultation-report",
+      "DOCUMENT_URL": "https://simbad.example.test/documents/SB-DOC-0002",
+      "DOCUMENT_DATE": "2026-03-28",
+      "DOCUMENT_AUTHOR": "MED-0109",
+      "EXTRACTED_AT": "2026-03-29T02:00:00"
+    },
+    {
+      "EXTRACTION_ID": "NLP-0003",
+      "PATIENT_ID": "99000002",
+      "ENTITY": "primary_site",
+      "TEXT_SPAN": "Adénocarcinome du lobe supérieur droit (C34.1)",
+      "VALUE": "C34.1",
+      "CONFIDENCE": 0.88,
+      "DOCUMENT_ID": "SB-DOC-0002",
+      "DOCUMENT_SYSTEM": "simbad",
+      "DOCUMENT_TYPE": "consultation-report",
+      "DOCUMENT_URL": "https://simbad.example.test/documents/SB-DOC-0002",
+      "DOCUMENT_DATE": "2026-03-28",
+      "DOCUMENT_AUTHOR": "MED-0109",
+      "EXTRACTED_AT": "2026-03-29T02:00:00"
+    }
+  ]
+}

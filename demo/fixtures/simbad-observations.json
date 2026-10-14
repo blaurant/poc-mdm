@@ -1,0 +1,16 @@
+{
+  "source": "simbad",
+  "table": "observations",
+  "extraitLe": "2026-07-01T23:00:00",
+  "lignes": [
+    {
+      "ID_OBS": "SB-OBS-0007",
+      "NUM_PATIENT": "99000002",
+      "CODE": "OMS",
+      "VALEUR": "2",
+      "DT_EVT": "03/06/2026",
+      "DT_SAISIE": "01/07/2026",
+      "AUTEUR": null
+    }
+  ]
+}

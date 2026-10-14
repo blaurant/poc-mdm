@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POC MDM – Modèle des données enrichies</title>
+<style>
+:root{--bleu:#0b3d6e;--bleu2:#24507f;--gris:#5b6475;--trait:#c9d3e0;--fond:#f2f5fa}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
+header{background:var(--bleu);color:#fff;padding:22px 32px}
+header h1{margin:0 0 6px;font-size:24px}
+header p{margin:0;opacity:.9}
+main{max-width:1240px;margin:0 auto;padding:16px 24px 50px}
+h2{color:var(--bleu);border-bottom:2px solid var(--trait);padding-bottom:4px;margin-top:34px}
+svg{width:100%;height:auto;display:block}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--trait);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:#e8eef6;color:var(--bleu)}
+code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);padding:0 3px;border-radius:3px}
+.note{background:var(--fond);border-left:4px solid var(--bleu2);padding:8px 12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>POC MDM – Modèle des données enrichies</h1>
+  <p>Couche domaine du prototype. Les noms en <i>italique gris</i> sont ceux du code, eux aussi dans le langage du domaine.</p>
+</header>
+<main>
+<p class="note">Une source affirme une valeur : c'est une <b>valeur sourcée</b>, datée et tracée. Le MDM rassemble toutes les valeurs sourcées d'un même attribut, applique les <b>règles qualité</b>, puis présente une <b>donnée consolidée</b> : la valeur retenue, sa qualité, et tout ce qui l'explique (sources concordantes, conflits, valeurs rejetées, historique).</p>
+
+<svg viewBox="0 0 1200 960" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, Helvetica Neue, Arial, sans-serif" role="img" aria-label="Modèle des données enrichies du MDM">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#24507f"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e8b57"/></marker>
+  </defs>
+  <style>
+    .t{font-size:17px;font-weight:700}
+    .c{font-size:12.5px;fill:#5b6475;font-style:italic}
+    .l{font-size:13.5px;fill:#1d2433}
+    .lab{font-size:12.5px;fill:#24507f;font-weight:600}
+  </style>
+
+  <!-- Dossier patient -->
+  <rect x="420" y="20" width="360" height="86" rx="10" fill="#0b3d6e"/>
+  <text x="600" y="48" text-anchor="middle" class="t" fill="#fff">Dossier patient enrichi</text>
+  <text x="600" y="68" text-anchor="middle" class="c" fill="#cfe0f5" style="fill:#cfe0f5">dossier patient (construireDossierPatient)</text>
+  <text x="600" y="92" text-anchor="middle" class="l" style="fill:#fff">identifiant · consulté « à une date » · résumé des revues</text>
+
+  <!-- Patient / Pathologie -->
+  <rect x="150" y="150" width="360" height="104" rx="10" fill="#fff" stroke="#24507f" stroke-width="2"/>
+  <text x="170" y="178" class="t" fill="#0b3d6e">Patient</text><text x="250" y="178" class="c">patient</text>
+  <text x="170" y="206" class="l">• Date de naissance <tspan class="c">dateNaissance</tspan> — intemporelle</text>
+  <text x="170" y="232" class="l">• Statut OMS <tspan class="c">statutOms</tspan></text>
+
+  <rect x="690" y="150" width="360" height="104" rx="10" fill="#fff" stroke="#24507f" stroke-width="2"/>
+  <text x="710" y="178" class="t" fill="#0b3d6e">Pathologie</text><text x="815" y="178" class="c">pathologie</text>
+  <text x="710" y="206" class="l">• Localisation primitive <tspan class="c">localisationPrimitive</tspan></text>
+  <text x="710" y="232" class="l">• Catégorie T du TNM <tspan class="c">categorieT</tspan></text>
+
+  <g stroke="#24507f" stroke-width="2" fill="none" marker-end="url(#a)">
+    <line x1="530" y1="106" x2="400" y2="148"/>
+    <line x1="670" y1="106" x2="800" y2="148"/>
+    <line x1="330" y1="254" x2="470" y2="318"/>
+    <line x1="870" y1="254" x2="730" y2="318"/>
+  </g>
+  <text x="600" y="296" text-anchor="middle" class="lab">chaque attribut est une donnée consolidée</text>
+
+  <!-- Donnée consolidée -->
+  <rect x="330" y="320" width="540" height="212" rx="10" fill="#fff6dd" stroke="#c98a1a" stroke-width="2"/>
+  <text x="350" y="350" class="t" fill="#5a3b00">Donnée consolidée</text><text x="525" y="350" class="c">consoliderAttribut</text>
+  <text x="350" y="380" class="l">• Valeur retenue et sa date de valeur <tspan class="c">valeur · dateValeur</tspan></text>
+  <text x="350" y="406" class="l">• Statut : consolidée, en conflit, sans valeur valide <tspan class="c">statut</tspan></text>
+  <text x="350" y="432" class="l">• À revoir par un data steward <tspan class="c">aRevoir</tspan></text>
+  <text x="350" y="458" class="l">• Confiance (score, niveau) et explication <tspan class="c">qualite.confiance · motif</tspan></text>
+  <text x="350" y="484" class="l">• Aptitude par usage : RCP, recherche <tspan class="c">qualite.aptitude</tspan></text>
+  <text x="350" y="510" class="l">• Contrôles appliqués à la valeur retenue <tspan class="c">qualite.controles</tspan></text>
+
+  <g stroke="#24507f" stroke-width="2" fill="none" marker-end="url(#a)">
+    <line x1="600" y1="532" x2="600" y2="612"/>
+  </g>
+  <text x="612" y="556" class="lab">1 à n valeurs sourcées, classées en :</text>
+  <text x="612" y="574" class="lab">sources concordantes · alternatives (conflit)</text>
+  <text x="612" y="592" class="lab">rejetées · historique (dates de valeur antérieures)</text>
+
+  <!-- Valeur sourcée -->
+  <rect x="330" y="614" width="540" height="160" rx="10" fill="#fff" stroke="#c98a1a" stroke-width="2.5"/>
+  <text x="350" y="644" class="t" fill="#5a3b00">Valeur sourcée</text><text x="490" y="644" class="c">ValeurSourcee — ce qu'une source affirme</text>
+  <text x="350" y="674" class="l">• Valeur canonique et valeur brute reçue <tspan class="c">valeur · valeurBrute</tspan></text>
+  <text x="350" y="700" class="l">• Date de valeur : quand c'était vrai <tspan class="c">dateValeur</tspan></text>
+  <text x="350" y="726" class="l">• Date d'enregistrement : saisie dans la source <tspan class="c">dateEnregistrement</tspan></text>
+  <text x="350" y="752" class="l">• Date d'intégration : entrée dans le MDM <tspan class="c">dateIntegration</tspan></text>
+
+  <!-- Provenance + fiabilité -->
+  <rect x="920" y="590" width="260" height="196" rx="10" fill="#fff" stroke="#24507f" stroke-width="2"/>
+  <text x="940" y="620" class="t" fill="#0b3d6e">Provenance</text><text x="1050" y="620" class="c">provenance</text>
+  <text x="940" y="648" class="l">• Source, table, champ</text>
+  <text x="940" y="672" class="l">• Identifiant d'enregistrement</text>
+  <text x="940" y="696" class="l">• Mode : saisie, reprise, NLP</text>
+  <text x="940" y="720" class="l">• Auteur</text>
+  <text x="940" y="744" class="l">• Document source et</text>
+  <text x="940" y="766" class="l">  confiance de l'extraction</text>
+  <rect x="920" y="812" width="260" height="62" rx="10" fill="#eef1f5" stroke="#8a96a8"/>
+  <text x="940" y="838" class="t" style="font-size:15px" fill="#333">Fiabilité</text><text x="1018" y="838" class="c">fiabilite</text>
+  <text x="940" y="860" class="l">haute · moyenne · faible, selon le mode</text>
+  <g stroke="#24507f" stroke-width="2" fill="none" marker-end="url(#a)">
+    <line x1="870" y1="690" x2="918" y2="690"/>
+    <line x1="1050" y1="786" x2="1050" y2="810"/>
+  </g>
+
+  <!-- Règle qualité + contrôle -->
+  <rect x="20" y="320" width="280" height="236" rx="10" fill="#e6f5ea" stroke="#2e8b57" stroke-width="2"/>
+  <text x="40" y="350" class="t" fill="#1d6b40">Règle qualité</text><text x="168" y="350" class="c">RegleQualite</text>
+  <text x="40" y="372" class="lab" style="fill:#1d6b40">une donnée, modifiable à chaud</text>
+  <text x="40" y="400" class="l">• Identifiant et version</text>
+  <text x="40" y="424" class="l">• Attribut ciblé (ou tous)</text>
+  <text x="40" y="448" class="l">• Dimension : conformité, complétude,</text>
+  <text x="40" y="468" class="l">  plausibilité, fraîcheur…</text>
+  <text x="40" y="492" class="l">• Contrôle et paramètres</text>
+  <text x="40" y="516" class="l">• Sévérité : bloquante / avertissement</text>
+  <text x="40" y="540" class="l">• Usages · auteur métier · date d'effet</text>
+
+  <rect x="20" y="614" width="280" height="140" rx="10" fill="#f3fbf5" stroke="#2e8b57" stroke-width="2"/>
+  <text x="40" y="644" class="t" fill="#1d6b40">Contrôle</text><text x="128" y="644" class="c">Controle</text>
+  <text x="40" y="672" class="l">• Règle et version appliquées</text>
+  <text x="40" y="696" class="l">• Dimension, sévérité, usages</text>
+  <text x="40" y="720" class="l">• Résultat : réussi / échec</text>
+  <text x="40" y="738" class="lab" style="fill:#1d6b40">porte sur une valeur sourcée →</text>
+  <g stroke="#2e8b57" stroke-width="2" fill="none" marker-end="url(#g)">
+    <line x1="160" y1="556" x2="160" y2="612"/>
+    <line x1="300" y1="690" x2="328" y2="690"/>
+  </g>
+  <text x="170" y="590" class="lab" style="fill:#1d6b40">produit</text>
+  
+
+  <!-- Les trois dates -->
+  <rect x="20" y="812" width="870" height="128" rx="10" fill="#f2f5fa" stroke="#c9d3e0"/>
+  <text x="40" y="840" class="t" fill="#0b3d6e" style="font-size:15px">Les trois dates d'une valeur sourcée</text>
+  <text x="40" y="866" class="l">• <tspan font-weight="700">Date de valeur</tspan> : quand la valeur était vraie (date de la consultation, du document). Deux dates différentes = une évolution.</text>
+  <text x="40" y="890" class="l">• <tspan font-weight="700">Date d'enregistrement</tspan> : quand la source l'a saisie. Sert à répondre à « que savait-on à telle date ? ».</text>
+  <text x="40" y="914" class="l">• <tspan font-weight="700">Date d'intégration</tspan> : quand le MDM l'a reçue. Sert à l'audit du MDM.</text>
+</svg>
+
+<h2>Comment lire une donnée consolidée</h2>
+<table>
+  <tr><th style="width:24%">Situation</th><th>Règle appliquée par le MDM</th><th style="width:26%">Ce que voit le métier</th></tr>
+  <tr><td><b>Évolution</b></td><td>Les sources donnent des valeurs à des dates de valeur différentes : la plus récente est la valeur courante.</td><td>Valeur courante + <code>historique</code></td></tr>
+  <tr><td><b>Concordance</b></td><td>Plusieurs sources donnent la même valeur à la même date de valeur : la confiance augmente.</td><td>Plusieurs entrées dans <code>sources</code></td></tr>
+  <tr><td><b>Conflit</b></td><td>Plusieurs sources donnent des valeurs différentes à la même date de valeur : la source la plus fiable l'emporte, la confiance baisse, une revue est demandée.</td><td><code>statut: conflit</code>, <code>alternatives</code>, <code>aRevoir</code></td></tr>
+  <tr><td><b>Rejet</b></td><td>Une valeur échoue à une règle bloquante : elle n'est jamais retenue, mais reste visible.</td><td><code>rejetees</code> avec le contrôle en échec</td></tr>
+  <tr><td><b>Aptitude</b></td><td>Une règle liée à un usage (ex. fraîcheur pour la RCP) n'écarte pas la valeur : elle dit seulement si elle convient à cet usage.</td><td><code>qualite.aptitude</code></td></tr>
+</table>
+
+<h2>Correspondance avec le code</h2>
+<table>
+  <tr><th>Concept</th><th>Fichier de la couche domaine</th></tr>
+  <tr><td>Attributs gérés (Patient, Pathologie)</td><td><code>src/domain/attributs.js</code></td></tr>
+  <tr><td>Valeur sourcée et provenance</td><td><code>src/domain/valeur-sourcee.js</code></td></tr>
+  <tr><td>Correspondance des sources (lignage)</td><td><code>src/domain/lignage-sources.js</code></td></tr>
+  <tr><td>Fiabilité</td><td><code>src/domain/fiabilite.js</code></td></tr>
+  <tr><td>Règle qualité et contrôle</td><td><code>src/domain/regles-qualite.js</code></td></tr>
+  <tr><td>Donnée consolidée (évolution, concordance, conflit, rejet, confiance)</td><td><code>src/domain/consolidation.js</code></td></tr>
+  <tr><td>Dossier patient enrichi</td><td><code>src/domain/dossier-patient.js</code></td></tr>
+</table>
+</main>
+</body>
+</html>

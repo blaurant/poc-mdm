@@ -1,0 +1,15 @@
+{
+  "name": "poc-mdm",
+  "version": "0.1.0",
+  "description": "POC MDM IGR (igr.poc)",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "demo": "node scripts/build-demo.js"
+  }
+}
