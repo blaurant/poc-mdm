@@ -176,9 +176,8 @@ const generalAssumptions = [
 ];
 
 const debates = [
-  'Faut-il conserver le préfixe c/p/y du TNM ? Il distingue le stade clinique du stade pathologique.',
   'Les poids de fiabilité et la formule de confiance sont arbitraires : ils doivent être fixés avec le métier.',
-  'Faut-il évaluer la fraîcheur par rapport à la date du jour, ou par rapport à la date de la RCP visée ?',
+  'Faut-il évaluer la fraîcheur par rapport à la date du jour ?',
   'Pour la consultation « à une date », faut-il proposer les deux axes (ce que la source savait / ce que le MDM savait) ?',
   'Qui peut créer ou modifier une règle, et avec quelle validation ?',
 ];
