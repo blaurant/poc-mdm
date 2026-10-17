@@ -4,6 +4,7 @@ Prototype du MDM (plateforme de données de référence) de l'IGR – objectif 1
 
 - **Démonstration :** ouvrir [`demo/index.html`](demo/index.html). Pour chaque cas de la note, la page montre le JSON initial (sources), le JSON final (MDM) et les hypothèses d'enrichissement.
 - **Modèle des données enrichies :** ouvrir [`docs/domain-model.html`](docs/domain-model.html).
+- **Objets du domaine (vue code) :** ouvrir [`docs/domain-objects.html`](docs/domain-objects.html).
 
 Toutes les données sont **fictives**.
 

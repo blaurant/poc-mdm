@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POC MDM – Objets du domaine</title>
+<style>
+:root{--bleu:#0b3d6e;--bleu2:#24507f;--gris:#5b6475;--trait:#c9d3e0;--fond:#f2f5fa}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
+header{background:var(--bleu);color:#fff;padding:22px 32px}
+header h1{margin:0 0 6px;font-size:24px}
+header p{margin:0;opacity:.9}
+header a{color:#cfe0f5}
+main{max-width:1240px;margin:0 auto;padding:16px 24px 50px}
+h2{color:var(--bleu);border-bottom:2px solid var(--trait);padding-bottom:4px;margin-top:34px}
+svg{width:100%;height:auto;display:block}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--trait);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:#e8eef6;color:var(--bleu)}
+code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);padding:0 3px;border-radius:3px}
+.note{background:var(--fond);border-left:4px solid var(--bleu2);padding:8px 12px}
+.leg span{display:inline-block;padding:1px 8px;border-radius:4px;margin-right:8px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>POC MDM – Objets du domaine</h1>
+  <p>Comment la couche <code style="background:#24507f;color:#fff">src/domain/</code> modélise les objets, tels qu'ils sont codés. Vue métier : <a href="domain-model.html">modèle des données enrichies</a>.</p>
+</header>
+<main>
+<p class="note">Le domaine ne contient <b>aucune classe</b> : chaque objet est une <b>donnée immuable</b> (<code>Object.freeze</code>), créée par une <b>fabrique qui la valide</b> (<code>creerValeurSourcee</code>, <code>creerRegleQualite</code>, qui lèvent une <code>ErreurDomaine</code>), et manipulée par des <b>fonctions pures</b>. Seuls deux objets sont stockés ; tout le reste est recalculé à chaque extraction.</p>
+
+<p class="leg"><span style="background:#eceef2;border:1px solid #9aa3b2">Référentiel codé en dur</span><span style="background:#fff3dc;border:1px solid #c98a1a">Stocké</span><span style="background:#e3eefa;border:1px solid #24507f">Calculé, jamais stocké</span> Flèche : fonction du domaine qui produit l'objet.</p>
+
+<svg viewBox="0 0 1200 1180" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, Helvetica Neue, Arial, sans-serif" role="img" aria-label="Diagramme des objets du domaine">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#24507f"/></marker>
+  </defs>
+  <style>
+    .t{font-size:17px;font-weight:700}
+    .s{font-size:12.5px;fill:#5b6475;font-style:italic}
+    .f{font-family:Menlo,Consolas,monospace;font-size:12.5px;fill:#1d2433;white-space:pre}
+    .ty{fill:#6b7486}
+    .n{font-size:12.5px;fill:#5b6475}
+    .band{font-size:12px;font-weight:700;letter-spacing:.06em}
+    .lab{font-size:12.5px;fill:#24507f;font-weight:600}
+  </style>
+
+  <!-- ===== Bande A : référentiel codé en dur ===== -->
+  <rect x="10" y="40" width="1180" height="250" rx="12" fill="#f4f5f7" stroke="#d5d9e0"/>
+  <text x="1178" y="62" text-anchor="end" class="band" fill="#6b7486">RÉFÉRENTIEL CODÉ EN DUR · change par déploiement</text>
+
+  <rect x="30" y="80" width="340" height="190" rx="9" fill="#fff" stroke="#9aa3b2" stroke-width="2"/>
+  <text x="48" y="104" class="t" fill="#333">Attribut</text>
+  <text x="48" y="122" class="s">objet valeur · ATTRIBUTS (attributs.js)</text>
+  <text x="48" y="148" class="f">cle<tspan class="ty"> : string</tspan></text>
+  <text x="48" y="167" class="f">entite<tspan class="ty"> : 'patient' | 'pathologie'</tspan></text>
+  <text x="48" y="186" class="f">typeValeur<tspan class="ty"> : date|entier|cim-o-3|tnm-t</tspan></text>
+  <text x="48" y="205" class="f">temporel<tspan class="ty"> : booléen</tspan></text>
+  <text x="48" y="224" class="f">description<tspan class="ty"> : texte</tspan></text>
+  <text x="48" y="248" class="n">4 instances : dateNaissance, statutOms,</text>
+  <text x="48" y="263" class="n">localisationPrimitive, categorieT</text>
+
+  <rect x="395" y="80" width="400" height="190" rx="9" fill="#fff" stroke="#9aa3b2" stroke-width="2"/>
+  <text x="413" y="104" class="t" fill="#333">Correspondance source</text>
+  <text x="413" y="122" class="s">objet valeur · CORRESPONDANCES_SOURCES (lignage-sources.js)</text>
+  <text x="413" y="148" class="f">source, table<tspan class="ty"> : string</tspan></text>
+  <text x="413" y="167" class="f">disposition<tspan class="ty"> : 'large' | 'longue'</tspan></text>
+  <text x="413" y="186" class="f">mode<tspan class="ty"> : ModeAcquisition</tspan></text>
+  <text x="413" y="205" class="f">champs identifiants et dates<tspan class="ty"> (+ format)</tspan></text>
+  <text x="413" y="224" class="f">colonnes | codes<tspan class="ty"> → clé d'Attribut</tspan></text>
+  <text x="413" y="248" class="n">5 instances : dxcare/patient, dxcare/c_quest, simbad/patient,</text>
+  <text x="413" y="263" class="n">simbad/observations, nlp/comptes_rendus_consultation</text>
+
+  <rect x="820" y="80" width="350" height="190" rx="9" fill="#fff" stroke="#9aa3b2" stroke-width="2"/>
+  <text x="838" y="104" class="t" fill="#333">Énumérations et politiques</text>
+  <text x="838" y="122" class="s">constantes du domaine</text>
+  <text x="838" y="148" class="f">MODES_ACQUISITION<tspan class="ty"> saisie|reprise|nlp</tspan></text>
+  <text x="838" y="167" class="f">NIVEAUX_FIABILITE<tspan class="ty"> 0,9 | 0,6 | 0,3</tspan></text>
+  <text x="838" y="186" class="f">DIMENSIONS<tspan class="ty"> (6)</tspan> · USAGES<tspan class="ty"> rcp|recherche</tspan></text>
+  <text x="838" y="205" class="f">SEVERITES<tspan class="ty"> bloquante|avertissement</tspan></text>
+  <text x="838" y="224" class="f">TYPES_CONTROLE<tspan class="ty"> (6 contrôles)</tspan></text>
+  <text x="838" y="243" class="f">POLITIQUE_CONFIANCE<tspan class="ty"> bonus, pénalités</tspan></text>
+
+  <!-- ===== Bande B : stocké ===== -->
+  <rect x="10" y="310" width="1180" height="370" rx="12" fill="#fff8ea" stroke="#ecd6a8"/>
+  <text x="1178" y="332" text-anchor="end" class="band" fill="#8a5a00">STOCKÉ · les deux seuls objets persistés, en ajout seul</text>
+
+  <rect x="30" y="350" width="380" height="310" rx="9" fill="#fff" stroke="#c98a1a" stroke-width="2.5"/>
+  <text x="48" y="374" class="t" fill="#5a3b00">Valeur sourcée</text>
+  <text x="48" y="392" class="s">objet valeur immuable · creerValeurSourcee</text>
+  <text x="48" y="418" class="f">id<tspan class="ty"> : source/table/enr/attribut@date</tspan></text>
+  <text x="48" y="437" class="f">identifiantPatient<tspan class="ty"> : string</tspan></text>
+  <text x="48" y="456" class="f">attribut<tspan class="ty"> : clé d'Attribut</tspan></text>
+  <text x="48" y="475" class="f">valeur<tspan class="ty"> : canonique | null</tspan></text>
+  <text x="48" y="494" class="f">valeurBrute<tspan class="ty"> : telle que reçue</tspan></text>
+  <text x="48" y="513" class="f">erreurAnalyse<tspan class="ty"> : texte | null</tspan></text>
+  <text x="48" y="532" class="f">dateValeur<tspan class="ty"> : date | null</tspan></text>
+  <text x="48" y="551" class="f">dateEnregistrement<tspan class="ty"> : date-heure</tspan></text>
+  <text x="48" y="570" class="f">dateIntegration<tspan class="ty"> : date-heure</tspan></text>
+  <text x="48" y="589" class="f">provenance<tspan class="ty"> : Provenance</tspan></text>
+  <text x="48" y="620" class="n">une par valeur, par source et par saisie ;</text>
+  <text x="48" y="636" class="n">jamais modifiée ni supprimée (dépôt DepotValeursSourcees)</text>
+
+  <polygon points="410,505 420,499 430,505 420,511" fill="#c98a1a"/>
+  <line x1="430" y1="505" x2="450" y2="505" stroke="#c98a1a" stroke-width="2"/>
+  <rect x="450" y="390" width="250" height="230" rx="9" fill="#fff" stroke="#c98a1a" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="468" y="414" class="t" fill="#5a3b00">Provenance</text>
+  <text x="468" y="432" class="s">objet valeur, incluse dans la valeur</text>
+  <text x="468" y="456" class="f">source · table · champ</text>
+  <text x="468" y="475" class="f">identifiantEnregistrement</text>
+  <text x="468" y="494" class="f">mode<tspan class="ty"> : ModeAcquisition</tspan></text>
+  <text x="468" y="513" class="f">auteur<tspan class="ty"> : string | null</tspan></text>
+  <text x="468" y="532" class="f">confianceExtraction?<tspan class="ty"> 0..1</tspan></text>
+  <text x="468" y="551" class="f">document?<tspan class="ty"> : {identifiant,</tspan></text>
+  <text x="468" y="570" class="f"><tspan class="ty">  systeme, type, url}</tspan></text>
+  <text x="468" y="600" class="n">confiance et document : NLP seulement</text>
+
+  <rect x="730" y="350" width="440" height="310" rx="9" fill="#fff" stroke="#c98a1a" stroke-width="2.5"/>
+  <text x="748" y="374" class="t" fill="#5a3b00">Règle qualité</text>
+  <text x="748" y="392" class="s">objet valeur versionné · creerRegleQualite</text>
+  <text x="748" y="416" class="f">identifiant<tspan class="ty"> : string</tspan> · version<tspan class="ty"> : 1, 2, …</tspan></text>
+  <text x="748" y="434" class="f">attribut<tspan class="ty"> : clé d'Attribut | '*'</tspan></text>
+  <text x="748" y="452" class="f">dimension<tspan class="ty"> : conformite|plausibilite|…</tspan></text>
+  <text x="748" y="470" class="f">typeControle<tspan class="ty"> : l'un des 6 contrôles</tspan></text>
+  <text x="748" y="488" class="f">parametres<tspan class="ty"> : {min, max} | {expression} | …</tspan></text>
+  <text x="748" y="506" class="f">severite<tspan class="ty"> : bloquante | avertissement</tspan></text>
+  <text x="748" y="524" class="f">usages<tspan class="ty"> : ('rcp'|'recherche')[]</tspan></text>
+  <text x="748" y="542" class="f">description<tspan class="ty"> : texte</tspan></text>
+  <text x="748" y="560" class="f">auteur<tspan class="ty"> : responsable métier</tspan></text>
+  <text x="748" y="578" class="f">dateEffet<tspan class="ty"> : date</tspan> · active<tspan class="ty"> : booléen</tspan></text>
+  <text x="748" y="596" class="f">definieLe<tspan class="ty"> : date-heure</tspan></text>
+  <text x="748" y="624" class="n">modifier une règle = créer la version n+1 (definirRegleQualite) ;</text>
+  <text x="748" y="640" class="n">toutes les versions sont gardées (dépôt DepotReglesQualite)</text>
+
+  <!-- A -> B -->
+  <g stroke="#24507f" stroke-width="2" fill="none" marker-end="url(#a)">
+    <line x1="200" y1="270" x2="200" y2="348"/>
+    <line x1="560" y1="270" x2="380" y2="348"/>
+    <line x1="845" y1="270" x2="845" y2="348"/>
+  </g>
+  <text x="208" y="304" class="lab">attribut</text>
+  <text x="560" y="304" class="lab">transcrireExtraction + normaliserValeur</text>
+  <text x="853" y="304" class="lab">contrôles, dimensions, usages</text>
+
+  <!-- ===== Bande C : calculé ===== -->
+  <rect x="10" y="700" width="1180" height="470" rx="12" fill="#eef4fb" stroke="#c9d8ea"/>
+  <text x="1178" y="1160" text-anchor="end" class="band" fill="#24507f">CALCULÉ À LA DEMANDE par extraireDonnees(identifiantPatient, aLaDate) · jamais stocké</text>
+
+  <rect x="30" y="745" width="250" height="120" rx="9" fill="#fff" stroke="#24507f" stroke-width="2"/>
+  <text x="48" y="769" class="t" fill="#0b3d6e">Fiabilité</text>
+  <text x="48" y="787" class="s">fiabiliteDe(valeurSourcee)</text>
+  <text x="48" y="811" class="f">niveau<tspan class="ty"> : haute|moyenne|faible</tspan></text>
+  <text x="48" y="830" class="f">score<tspan class="ty"> : 0,9 | 0,6 | 0,3</tspan></text>
+  <text x="48" y="852" class="n">déduite du mode d'acquisition</text>
+
+  <rect x="30" y="890" width="250" height="150" rx="9" fill="#fff" stroke="#9aa3b2" stroke-dasharray="5 3"/>
+  <text x="48" y="914" class="t" style="font-size:14px" fill="#333">À noter</text>
+  <text x="48" y="938" class="n">Patient et Pathologie ne sont pas</text>
+  <text x="48" y="956" class="n">des objets du domaine : ce sont des</text>
+  <text x="48" y="974" class="n">regroupements d'attributs</text>
+  <text x="48" y="992" class="n">(Attribut.entite), reconstitués</text>
+  <text x="48" y="1010" class="n">dans le dossier patient.</text>
+
+  <rect x="310" y="745" width="480" height="375" rx="9" fill="#fff" stroke="#24507f" stroke-width="2.5"/>
+  <text x="328" y="769" class="t" fill="#0b3d6e">Donnée consolidée</text>
+  <text x="328" y="787" class="s">consoliderAttribut({attribut, valeurs, regles, aLaDate})</text>
+  <text x="328" y="813" class="f">attribut · entite · temporel</text>
+  <text x="328" y="832" class="f">valeur · dateValeur<tspan class="ty"> : la valeur retenue</tspan></text>
+  <text x="328" y="851" class="f">statut<tspan class="ty"> : consolidee|conflit|sans-valeur-valide|</tspan></text>
+  <text x="328" y="870" class="f"><tspan class="ty">         sans-donnee</tspan></text>
+  <text x="328" y="889" class="f">aRevoir<tspan class="ty"> : booléen</tspan></text>
+  <text x="328" y="908" class="f">qualite.confiance<tspan class="ty"> : {score, niveau}</tspan></text>
+  <text x="328" y="927" class="f">qualite.motif<tspan class="ty"> : texte explicatif</tspan></text>
+  <text x="328" y="946" class="f">qualite.aptitude<tspan class="ty"> : {rcp, recherche}</tspan></text>
+  <text x="328" y="965" class="f">qualite.controles<tspan class="ty"> : Controle[]</tspan></text>
+  <text x="328" y="984" class="f">sources<tspan class="ty"> : SourceDecrite[]  concordantes</tspan></text>
+  <text x="328" y="1003" class="f">alternatives<tspan class="ty"> : SourceDecrite[]  en conflit</tspan></text>
+  <text x="328" y="1022" class="f">rejetees<tspan class="ty"> : SourceDecrite[]  règle bloquante</tspan></text>
+  <text x="328" y="1041" class="f">historique<tspan class="ty"> : dates de valeur antérieures</tspan></text>
+  <text x="328" y="1074" class="n">SourceDecrite = valeur sourcée + sa fiabilité + ses contrôles.</text>
+  <text x="328" y="1092" class="n">Une donnée consolidée par attribut : 4 par patient.</text>
+
+  <rect x="820" y="745" width="350" height="170" rx="9" fill="#fff" stroke="#24507f" stroke-width="2"/>
+  <text x="838" y="769" class="t" fill="#0b3d6e">Contrôle</text>
+  <text x="838" y="787" class="s">evaluerRegle(regle, valeurSourcee)</text>
+  <text x="838" y="813" class="f">identifiantRegle · versionRegle</text>
+  <text x="838" y="832" class="f">dimension · severite · usages</text>
+  <text x="838" y="851" class="f">resultat<tspan class="ty"> : reussi|echec|non-applicable</tspan></text>
+  <text x="838" y="876" class="n">un par règle en vigueur à aLaDate</text>
+  <text x="838" y="894" class="n">et par valeur sourcée</text>
+
+  <rect x="820" y="940" width="350" height="190" rx="9" fill="#0b3d6e"/>
+  <text x="838" y="964" class="t" fill="#fff">Dossier patient</text>
+  <text x="838" y="982" class="s" style="fill:#cfe0f5">construireDossierPatient(…)</text>
+  <text x="838" y="1006" class="f" style="fill:#fff">identifiantPatient · aLaDate · extraitLe</text>
+  <text x="838" y="1025" class="f" style="fill:#fff">patient<tspan style="fill:#cfe0f5"> : {dateNaissance, statutOms}</tspan></text>
+  <text x="838" y="1044" class="f" style="fill:#fff">pathologie<tspan style="fill:#cfe0f5"> : {localisationPrimitive,</tspan></text>
+  <text x="838" y="1063" class="f" style="fill:#cfe0f5">             categorieT}</text>
+  <text x="838" y="1082" class="f" style="fill:#fff">synthese<tspan style="fill:#cfe0f5"> : {consolides, conflits,</tspan></text>
+  <text x="838" y="1101" class="f" style="fill:#cfe0f5">           aRevoir[], valeursRejetees}</text>
+  <text x="838" y="1121" class="n" style="fill:#cfe0f5">réponse de GET /extraire-donnees</text>
+
+  <!-- B -> C et C -> C -->
+  <g stroke="#24507f" stroke-width="2" fill="none" marker-end="url(#a)">
+    <line x1="100" y1="660" x2="100" y2="743"/>
+    <line x1="330" y1="660" x2="450" y2="743"/>
+    <line x1="995" y1="660" x2="995" y2="743"/>
+    <line x1="280" y1="805" x2="308" y2="805"/>
+    <line x1="820" y1="830" x2="792" y2="830"/>
+    <line x1="790" y1="1030" x2="818" y2="1030"/>
+  </g>
+  <text x="108" y="694" class="lab">fiabiliteDe</text>
+  <text x="400" y="694" class="lab">consoliderAttribut : 1..n valeurs d'un attribut</text>
+  <text x="1003" y="694" class="lab">versions en vigueur à aLaDate</text>
+</svg>
+
+<h2>Nature de chaque objet</h2>
+<table>
+  <tr><th style="width:17%">Objet</th><th style="width:20%">Nature (DDD)</th><th style="width:15%">Cycle de vie</th><th>Produit par</th><th style="width:18%">Fichier</th></tr>
+  <tr><td><b>Attribut</b></td><td>Objet valeur de référence</td><td>Codé en dur</td><td>Constante <code>ATTRIBUTS</code> ; <code>normaliserValeur</code> convertit une valeur brute selon son <code>typeValeur</code></td><td><code>attributs.js</code></td></tr>
+  <tr><td><b>Correspondance source</b></td><td>Objet valeur de référence (lignage)</td><td>Codé en dur</td><td>Constante <code>CORRESPONDANCES_SOURCES</code>, lue par <code>transcrireExtraction</code></td><td><code>lignage-sources.js</code></td></tr>
+  <tr><td><b>Valeur sourcée</b></td><td>Objet valeur immuable, identifié par sa provenance et sa date d'enregistrement</td><td>Stockée, en ajout seul</td><td><code>transcrireExtraction</code> → <code>creerValeurSourcee</code>, dans le scénario <code>integrerDonnees</code> (idempotent : un <code>id</code> déjà connu est ignoré)</td><td><code>valeur-sourcee.js</code></td></tr>
+  <tr><td><b>Provenance</b></td><td>Objet valeur inclus</td><td>Stockée avec la valeur</td><td><code>transcrireExtraction</code></td><td><code>valeur-sourcee.js</code></td></tr>
+  <tr><td><b>Règle qualité</b></td><td>Objet valeur versionné (identifiant + version)</td><td>Stockée, toutes versions</td><td><code>creerRegleQualite</code>, dans le scénario <code>definirRegleQualite</code> (version = nombre de versions + 1)</td><td><code>regles-qualite.js</code></td></tr>
+  <tr><td><b>Fiabilité</b></td><td>Valeur calculée</td><td>Calculée</td><td><code>fiabiliteDe</code>, à partir du mode d'acquisition et de la confiance NLP (seuil 0,85)</td><td><code>fiabilite.js</code></td></tr>
+  <tr><td><b>Contrôle</b></td><td>Valeur calculée</td><td>Calculé</td><td><code>selectionnerReglesApplicables</code> puis <code>evaluerRegle</code></td><td><code>regles-qualite.js</code></td></tr>
+  <tr><td><b>Donnée consolidée</b></td><td>Vue calculée (projection)</td><td>Calculée</td><td><code>consoliderAttribut</code> : filtre à la date, rejette, groupe par date de valeur, départage par fiabilité puis par date d'enregistrement</td><td><code>consolidation.js</code></td></tr>
+  <tr><td><b>Dossier patient</b></td><td>Vue calculée (projection)</td><td>Calculé</td><td><code>construireDossierPatient</code>, dans le scénario <code>extraireDonnees</code></td><td><code>dossier-patient.js</code></td></tr>
+</table>
+
+<h2>Les choix de modélisation</h2>
+<ul>
+  <li><b>Le cœur est la valeur, pas l'entité.</b> L'unité stockée est « ce qu'une source affirme pour un attribut d'un patient, à une date ». Patient et Pathologie n'existent qu'à la lecture, en regroupant les attributs par <code>Attribut.entite</code>.</li>
+  <li><b>On stocke les faits, on calcule la vérité.</b> La consolidation n'est jamais enregistrée : elle est recalculée à chaque extraction. C'est ce qui permet d'appliquer immédiatement une nouvelle version de règle, et de répondre à « que savait-on à telle date ? » (<code>aLaDate</code> filtre sur <code>dateEnregistrement</code> et sur <code>dateEffet</code> des règles).</li>
+  <li><b>Rien n'est modifié ni effacé.</b> Valeurs sourcées et règles sont immuables ; une correction est une nouvelle valeur, un changement de règle est une nouvelle version.</li>
+  <li><b>Les règles sont des données, les contrôles du code.</b> Seuils, sévérité, usages et date d'effet se changent à chaud ; les 6 types de contrôle (<code>TYPES_CONTROLE</code>) sont codés.</li>
+  <li><b>Le domaine ne connaît que des ports.</b> <code>DepotValeursSourcees</code>, <code>DepotReglesQualite</code> et <code>Horloge</code> (<code>ports.js</code>) sont des contrats ; les implémentations sont dans l'infrastructure.</li>
+</ul>
+
+<h2>Ce que le modèle ne couvre pas encore</h2>
+<ul>
+  <li><b>Pas d'identité patient :</b> l'identifiant est supposé identique dans toutes les sources (NIP DXCare = NUM_PATIENT Simbad) ; aucun rapprochement d'identités.</li>
+  <li><b>Une seule pathologie par patient :</b> la Pathologie n'a pas d'identifiant propre ; deux tumeurs se mélangeraient.</li>
+  <li><b>Attributs et correspondances codés en dur :</b> ajouter un attribut ou une source demande un déploiement, contrairement aux règles.</li>
+  <li><b>Pas de liens entre attributs :</b> aucune règle ne compare deux attributs (ex. date de diagnostic après date de naissance).</li>
+  <li><b>Périmètre :</b> 4 attributs, 2 produits ; Traitement, Séjour, CR et Essai clinique restent à modéliser.</li>
+</ul>
+</main>
+</body>
+</html>
