@@ -7,8 +7,8 @@ const contexte = { dateReference: '2026-10-01' };
 
 test("un contrôle d'intervalle réussit dans l'intervalle et échoue hors de l'intervalle ou sans valeur", () => {
   const regle = uneRegle();
-  assert.equal(evaluerRegle(regle, uneValeur({ valeur: 1 }), contexte).resultat, 'reussi');
-  assert.equal(evaluerRegle(regle, uneValeur({ valeur: 6 }), contexte).resultat, 'echec');
+  assert.equal(evaluerRegle(regle, uneValeur({ valeur: 68 }), contexte).resultat, 'reussi');
+  assert.equal(evaluerRegle(regle, uneValeur({ valeur: 680 }), contexte).resultat, 'echec');
   assert.equal(evaluerRegle(regle, uneValeur({ valeur: null }), contexte).resultat, 'echec');
 });
 
@@ -33,21 +33,21 @@ test("un contrôle de provenance vérifie que l'auteur est connu", () => {
 
 test('la dernière version en vigueur à la date est retenue, les règles inactives sont ignorées', () => {
   const regles = [
-    uneRegle({ version: 1, parametres: { min: 0, max: 5 } }),
-    uneRegle({ version: 2, parametres: { min: 0, max: 4 }, dateEffet: '2026-09-01' }),
+    uneRegle({ version: 1, parametres: { min: 1, max: 300 } }),
+    uneRegle({ version: 2, parametres: { min: 1, max: 250 }, dateEffet: '2026-09-01' }),
     uneRegle({ identifiant: 'ANCIENNE', version: 1, active: false }),
     uneRegle({ identifiant: 'AUTRE', attribut: 'categorieT', typeControle: 'motif', parametres: { expression: '.*' } }),
   ];
-  assert.deepEqual(selectionnerReglesApplicables(regles, { attribut: 'statutOms', date: '2026-08-01' }).map((r) => r.version), [1]);
-  assert.deepEqual(selectionnerReglesApplicables(regles, { attribut: 'statutOms', date: '2026-10-01' }).map((r) => r.version), [2]);
+  assert.deepEqual(selectionnerReglesApplicables(regles, { attribut: 'poids', date: '2026-08-01' }).map((r) => r.version), [1]);
+  assert.deepEqual(selectionnerReglesApplicables(regles, { attribut: 'poids', date: '2026-10-01' }).map((r) => r.version), [2]);
 });
 
 test("une version définie après connuLe est ignorée, même avec une date d'effet rétroactive", () => {
   const regles = [
-    uneRegle({ version: 1, parametres: { min: 0, max: 5 } }),
-    uneRegle({ version: 2, parametres: { min: 0, max: 4 }, dateEffet: '2026-01-01', definieLe: '2026-10-05T09:00:00' }),
+    uneRegle({ version: 1, parametres: { min: 1, max: 300 } }),
+    uneRegle({ version: 2, parametres: { min: 1, max: 250 }, dateEffet: '2026-01-01', definieLe: '2026-10-05T09:00:00' }),
   ];
-  const versions = (connuLe) => selectionnerReglesApplicables(regles, { attribut: 'statutOms', date: '2026-09-20', connuLe }).map((r) => r.version);
+  const versions = (connuLe) => selectionnerReglesApplicables(regles, { attribut: 'poids', date: '2026-09-20', connuLe }).map((r) => r.version);
   assert.deepEqual(versions('2026-09-20T23:59:59'), [1]);
   assert.deepEqual(versions('2026-10-05T09:00:00'), [2]);
 });

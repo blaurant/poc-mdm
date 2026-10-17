@@ -6,8 +6,8 @@
     {
       "ID_OBS": "SB-OBS-0007",
       "NUM_PATIENT": "99000002",
-      "CODE": "OMS",
-      "VALEUR": "2",
+      "CODE": "POIDS",
+      "VALEUR": "72",
       "DT_EVT": "03/06/2026",
       "DT_SAISIE": "01/07/2026",
       "AUTEUR": null

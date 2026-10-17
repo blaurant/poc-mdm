@@ -7,11 +7,11 @@ import { FauxDepotReglesQualite, FauxDepotValeursSourcees, fausseHorloge } from 
 const extraction = {
   source: 'dxcare',
   table: 'c_quest',
-  lignes: [{ ID_REPONSE: 'CQ-1', NIP: 'P1', CODE_QUESTION: 'OMS', VALEUR: '1', DATE_EVT: '2026-09-12', DATE_SAISIE: '2026-09-12T10:32:00', AUTEUR: 'MED-1' }],
+  lignes: [{ ID_REPONSE: 'CQ-1', NIP: 'P1', CODE_QUESTION: 'POIDS', VALEUR: '68', DATE_EVT: '2026-09-12', DATE_SAISIE: '2026-09-12T10:32:00', AUTEUR: 'MED-1' }],
 };
 
 const regleFraicheur = {
-  identifiant: 'OMS-FRAICHEUR-RCP', attribut: 'statutOms', dimension: 'fraicheur', typeControle: 'anciennete-max-jours',
+  identifiant: 'POIDS-FRAICHEUR-RCP', attribut: 'poids', dimension: 'fraicheur', typeControle: 'anciennete-max-jours',
   parametres: { jours: 15 }, severite: 'avertissement', usages: ['rcp'], auteur: 'data-steward', dateEffet: '2026-10-01',
 };
 
@@ -48,8 +48,8 @@ test('extraireDonnees applique immédiatement une règle définie à chaud', asy
   const avant = await extraireDonnees({ identifiantPatient: 'P1' }, dependances);
   await definirRegleQualite(regleFraicheur, dependances);
   const apres = await extraireDonnees({ identifiantPatient: 'P1' }, dependances);
-  assert.equal(avant.patient.statutOms.qualite.aptitude.rcp, true);
-  assert.equal(apres.patient.statutOms.qualite.aptitude.rcp, false);
+  assert.equal(avant.patient.poids.qualite.aptitude.rcp, true);
+  assert.equal(apres.patient.poids.qualite.aptitude.rcp, false);
 });
 
 test('extraireDonnees refuse un patient inconnu et une date invalide', async () => {

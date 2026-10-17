@@ -6,9 +6,9 @@
     {
       "EXTRACTION_ID": "NLP-0001",
       "PATIENT_ID": "99000002",
-      "ENTITY": "performance_status",
-      "TEXT_SPAN": "Etat général conservé, PS 1",
-      "VALUE": "1",
+      "ENTITY": "body_weight",
+      "TEXT_SPAN": "Poids : 68 kg (72 kg en juin)",
+      "VALUE": "68",
       "CONFIDENCE": 0.87,
       "DOCUMENT_ID": "DX-DOC-5678",
       "DOCUMENT_SYSTEM": "dxcare",

@@ -2,13 +2,13 @@
   "definieLe": "2026-01-01T00:00:00",
   "regles": [
     {
-      "identifiant": "OMS-INTERVALLE",
-      "attribut": "statutOms",
-      "dimension": "conformite",
+      "identifiant": "POIDS-PLAUSIBLE",
+      "attribut": "poids",
+      "dimension": "plausibilite",
       "typeControle": "intervalle",
-      "parametres": { "min": 0, "max": 5 },
+      "parametres": { "min": 1, "max": 300 },
       "severite": "bloquante",
-      "description": "Le statut OMS / ECOG est un entier de 0 à 5",
+      "description": "Le poids est compris entre 1 et 300 kg",
       "auteur": "bureau-donnees",
       "dateEffet": "2026-01-01"
     },

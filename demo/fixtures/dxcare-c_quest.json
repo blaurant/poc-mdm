@@ -7,8 +7,8 @@
       "ID_REPONSE": "CQ-00101",
       "NIP": "99000002",
       "FORMULAIRE": "CONSULT_ONCO",
-      "CODE_QUESTION": "OMS",
-      "VALEUR": "1",
+      "CODE_QUESTION": "POIDS",
+      "VALEUR": "68",
       "DATE_EVT": "2026-09-12",
       "DATE_SAISIE": "2026-09-12T10:32:00",
       "AUTEUR": "MED-0233"

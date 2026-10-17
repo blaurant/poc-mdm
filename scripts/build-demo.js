@@ -37,11 +37,11 @@ const today = await extract();
 const cases = [];
 
 cases.push({
-  title: 'Cas 1 – Deux sources pour le même patient : une évolution, pas un conflit (statut OMS)',
-  summary: 'Trois sources donnent un statut OMS à des dates différentes : le MDM reconnaît une évolution et garde l’historique.',
-  shows: "Le statut OMS arrive de trois sources. Simbad dit 2 au 03/06 ; DXCare et le compte rendu (NLP) disent 1 au 12/09. Les dates de valeur étant différentes, le MDM y voit une <b>évolution</b> : la valeur courante est 1 (deux sources concordantes, confiance haute) et la valeur 2 passe dans l'historique.",
+  title: 'Cas 1 – Deux sources pour le même patient : une évolution, pas un conflit (poids)',
+  summary: 'Trois sources donnent un poids à des dates différentes : le MDM reconnaît une évolution et garde l’historique.',
+  shows: "Le poids arrive de trois sources. Simbad dit 72 kg au 03/06 ; DXCare et le compte rendu (NLP) disent 68 kg au 12/09. Les dates de valeur étant différentes, le MDM y voit une <b>évolution</b> (une perte de poids) : la valeur courante est 68 kg (deux sources concordantes, confiance haute) et 72 kg passe dans l'historique.",
   inputs: [pick('dxcare-c_quest', ['CQ-00101']), pick('simbad-observations', ['SB-OBS-0007']), pick('nlp-comptes-rendus-consultation', ['NLP-0001'])],
-  output: today.patient.statutOms,
+  output: today.patient.poids,
   assumptions: [
     'La date de valeur est la date de l’événement clinique : DATE_EVT dans DXCare, DT_EVT dans Simbad, date du document pour le NLP.',
     'Deux valeurs identiques à la même date de valeur sont concordantes : chaque source concordante ajoute +0,1 à la confiance.',
@@ -90,27 +90,27 @@ cases.push({
 });
 
 const freshnessRule = {
-  identifiant: 'OMS-FRAICHEUR-RCP',
-  attribut: 'statutOms',
+  identifiant: 'POIDS-FRAICHEUR-RCP',
+  attribut: 'poids',
   dimension: 'fraicheur',
   typeControle: 'anciennete-max-jours',
   parametres: { jours: 15 },
   severite: 'avertissement',
   usages: ['rcp'],
-  description: 'Pour une RCP, le statut OMS doit dater de moins de 15 jours',
+  description: 'Pour une RCP, le poids doit dater de moins de 15 jours',
   auteur: 'data-steward-oncologie',
   dateEffet: '2026-10-01',
 };
-const before = today.patient.statutOms.qualite;
+const before = today.patient.poids.qualite;
 const ruleV1 = await post('/regles-qualite', freshnessRule);
-const afterV1 = (await extract()).patient.statutOms.qualite;
-const ruleV2 = await post('/regles-qualite', { ...freshnessRule, parametres: { jours: 30 }, description: 'Pour une RCP, le statut OMS doit dater de moins de 30 jours' });
-const afterV2 = (await extract()).patient.statutOms.qualite;
+const afterV1 = (await extract()).patient.poids.qualite;
+const ruleV2 = await post('/regles-qualite', { ...freshnessRule, parametres: { jours: 30 }, description: 'Pour une RCP, le poids doit dater de moins de 30 jours' });
+const afterV2 = (await extract()).patient.poids.qualite;
 
 cases.push({
   title: 'Cas 5 – Une règle ajoutée à chaud par le métier, puis modifiée',
   summary: 'Un data steward ajoute puis modifie une règle de fraîcheur sans redéploiement : l’aptitude à la RCP change aussitôt.',
-  shows: "Un data steward ajoute, sans redéploiement, la règle « pour une RCP, l'OMS doit dater de moins de 15 jours ». À la date du jour (01/10/2026), l'OMS du 12/09 a 19 jours : la valeur n'est plus <b>apte à la RCP</b>, mais reste apte à la recherche. La règle passe ensuite à 30 jours (version 2) : la valeur redevient apte, et chaque contrôle indique la version de la règle appliquée.",
+  shows: "Un data steward ajoute, sans redéploiement, la règle « pour une RCP, le poids doit dater de moins de 15 jours » (il sert au calcul des doses). À la date du jour (01/10/2026), le poids du 12/09 a 19 jours : la valeur n'est plus <b>apte à la RCP</b>, mais reste apte à la recherche. La règle passe ensuite à 30 jours (version 2) : la valeur redevient apte, et chaque contrôle indique la version de la règle appliquée.",
   inputs: [{ 'POST /regles-qualite (v1)': freshnessRule }, { 'POST /regles-qualite (v2)': { parametres: { jours: 30 } } }],
   outputs: [
     { label: 'Qualité avant la règle', json: before },
@@ -131,11 +131,11 @@ const past = await extract('2026-08-01');
 cases.push({
   title: 'Cas 6 – Consultation « à une date » (as of)',
   summary: 'La même question posée au 01/08/2026 renvoie ce que l’on savait à cette date.',
-  shows: "La même question posée au 01/08/2026 renvoie ce que l'on savait à cette date : seul Simbad avait enregistré un OMS (2, au 03/06). Les valeurs DXCare et NLP, enregistrées en septembre, n'existent pas encore, et la règle de fraîcheur, en vigueur à partir du 01/10, ne s'applique pas.",
+  shows: "La même question posée au 01/08/2026 renvoie ce que l'on savait à cette date : seul Simbad avait enregistré un poids (72 kg, au 03/06). Les valeurs DXCare et NLP, enregistrées en septembre, n'existent pas encore, et la règle de fraîcheur, en vigueur à partir du 01/10, ne s'applique pas.",
   inputs: [{ requete: `GET /extraire-donnees?identifiantPatient=${PATIENT}&aLaDate=2026-08-01` }],
   outputs: [
-    { label: 'Statut OMS au 01/08/2026', json: past.patient.statutOms },
-    { label: 'Pour comparaison : statut OMS au 01/10/2026', json: { valeur: today.patient.statutOms.valeur, dateValeur: today.patient.statutOms.dateValeur, statut: today.patient.statutOms.statut } },
+    { label: 'Poids au 01/08/2026', json: past.patient.poids },
+    { label: 'Pour comparaison : poids au 01/10/2026', json: { valeur: today.patient.poids.valeur, dateValeur: today.patient.poids.dateValeur, statut: today.patient.poids.statut } },
   ],
   assumptions: [
     '« À une date » filtre sur la date d’enregistrement dans la source (dateEnregistrement) : l’historique Simbad étant importé en masse, la date d’intégration dans le MDM ne reflète pas ce qui était connu.',
@@ -150,14 +150,14 @@ clock.set('2026-10-05T09:00:00');
 const lateEntry = await fixture('dxcare-c_quest-saisie-tardive');
 reports.push({ name: 'dxcare-c_quest-saisie-tardive (cas 7, intégrée le 05/10)', report: await post('/integrer-donnees', lateEntry) });
 const retroactiveRule = {
-  identifiant: 'OMS-RECENT-RCP',
-  attribut: 'statutOms',
+  identifiant: 'POIDS-RECENT-RCP',
+  attribut: 'poids',
   dimension: 'fraicheur',
   typeControle: 'anciennete-max-jours',
   parametres: { jours: 7 },
   severite: 'avertissement',
   usages: ['rcp'],
-  description: 'Pour une RCP, le statut OMS doit dater de moins de 7 jours',
+  description: 'Pour une RCP, le poids doit dater de moins de 7 jours',
   auteur: 'data-steward-oncologie',
   dateEffet: '2026-09-01',
 };
@@ -165,18 +165,18 @@ const retroactiveRuleSaved = await post('/regles-qualite', retroactiveRule);
 const view = (dossier) => ({
   aLaDate: dossier.aLaDate,
   connuLe: dossier.connuLe,
-  valeur: dossier.patient.statutOms.valeur,
-  dateValeur: dossier.patient.statutOms.dateValeur,
-  sources: dossier.patient.statutOms.sources.map((source) => `${source.provenance.source} ${source.provenance.identifiantEnregistrement}, saisi le ${source.dateEnregistrement}`),
-  aptitude: dossier.patient.statutOms.qualite.aptitude,
-  reglesAppliquees: dossier.patient.statutOms.qualite.controles.map((controle) => `${controle.identifiantRegle} v${controle.versionRegle} : ${controle.resultat}`),
+  valeur: dossier.patient.poids.valeur,
+  dateValeur: dossier.patient.poids.dateValeur,
+  sources: dossier.patient.poids.sources.map((source) => `${source.provenance.source} ${source.provenance.identifiantEnregistrement}, saisi le ${source.dateEnregistrement}`),
+  aptitude: dossier.patient.poids.qualite.aptitude,
+  reglesAppliquees: dossier.patient.poids.qualite.controles.map((controle) => `${controle.identifiantRegle} v${controle.versionRegle} : ${controle.resultat}`),
 });
 const shownAtRcp = await extract('2026-09-20');
 const knownToday = await get(`/extraire-donnees?identifiantPatient=${PATIENT}&aLaDate=2026-09-20&connuLe=2026-10-05T09:00:00`);
 cases.push({
   title: 'Cas 7 – Bitemporalité : ce que le MDM montrait à la RCP, et ce que l’on sait aujourd’hui',
   summary: 'Une saisie tardive et une règle rétroactive ne réécrivent pas ce que le MDM a fourni à la RCP du 20/09.',
-  shows: "Le 20/09, la RCP consulte le MDM : <b>OMS 1</b> (consultation du 12/09), apte à la RCP. Le 02/10, un OMS 2 de la consultation du 18/09 est saisi en retard ; le 05/10, un data steward crée une règle « OMS de moins de 7 jours pour une RCP », en vigueur depuis le 01/09. Deux questions, deux réponses : <b>que montrait le MDM le 20/09 ?</b> (<code>aLaDate=2026-09-20</code>) → OMS 1, sans la nouvelle règle ; <b>que sait-on aujourd'hui du 20/09 ?</b> (<code>&amp;connuLe=2026-10-05T09:00:00</code>) → OMS 2 au 18/09, nouvelle règle appliquée.",
+  shows: "Le 20/09, la RCP consulte le MDM : <b>68 kg</b> (consultation du 12/09), apte à la RCP. Le 02/10, un poids de 62 kg mesuré à la consultation du 18/09 est saisi en retard ; le 05/10, un data steward crée une règle « poids de moins de 7 jours pour une RCP », en vigueur depuis le 01/09. Deux questions, deux réponses : <b>que montrait le MDM le 20/09 ?</b> (<code>aLaDate=2026-09-20</code>) → 68 kg, sans la nouvelle règle ; <b>que sait-on aujourd'hui du 20/09 ?</b> (<code>&amp;connuLe=2026-10-05T09:00:00</code>) → 62 kg au 18/09, nouvelle règle appliquée.",
   inputs: [{ 'POST /integrer-donnees (05/10)': lateEntry }, { 'POST /regles-qualite (05/10)': retroactiveRule }],
   outputs: [
     { label: 'Règle enregistrée : en vigueur au 01/09, définie le 05/10', json: { identifiant: retroactiveRuleSaved.identifiant, version: retroactiveRuleSaved.version, dateEffet: retroactiveRuleSaved.dateEffet, definieLe: retroactiveRuleSaved.definieLe } },
@@ -186,7 +186,7 @@ cases.push({
   assumptions: [
     'Deux axes de temps, pour les données comme pour les règles : la validité (dateValeur, dateEffet) répond à « à quelle date ? », la connaissance (dateEnregistrement, definieLe) à « su quand ? ».',
     '« aLaDate » fixe la validité ; « connuLe » fixe la connaissance et vaut aLaDate par défaut : sans connuLe, le MDM rejoue exactement ce qu’il fournissait à cette date.',
-    'Une règle définie après « connuLe » est ignorée, même si sa date d’effet est antérieure : sinon l’OMS du 12/09 (8 jours au 20/09) apparaîtrait a posteriori comme non apte, alors que la RCP l’a vu apte.',
+    'Une règle définie après « connuLe » est ignorée, même si sa date d’effet est antérieure : sinon le poids du 12/09 (8 jours au 20/09) apparaîtrait a posteriori comme non apte, alors que la RCP l’a vu apte.',
     'Rien n’est réécrit : la saisie tardive est une nouvelle valeur sourcée, la règle une nouvelle donnée ; les deux réponses restent disponibles indéfiniment.',
   ],
 });

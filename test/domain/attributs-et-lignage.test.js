@@ -6,13 +6,13 @@ const contexte = { dateIntegration: '2026-10-01T08:00:00' };
 
 test('normalise les valeurs des sources en valeurs canoniques', () => {
   assert.deepEqual(normaliserValeur('dateNaissance', '02/07/1956', { formatDate: 'date-francaise' }), { valeur: '1956-07-02', erreurAnalyse: null });
-  assert.deepEqual(normaliserValeur('statutOms', ' 2 '), { valeur: 2, erreurAnalyse: null });
+  assert.deepEqual(normaliserValeur('poids', ' 68,5 kg '), { valeur: 68.5, erreurAnalyse: null });
   assert.deepEqual(normaliserValeur('localisationPrimitive', 'c34.1 - Lobe supérieur'), { valeur: 'C34.1', erreurAnalyse: null });
   assert.deepEqual(normaliserValeur('categorieT', 'cT2a'), { valeur: '2a', erreurAnalyse: null });
 });
 
 test("garde une valeur illisible avec son erreur d'analyse au lieu d'échouer", () => {
-  assert.deepEqual(normaliserValeur('statutOms', 'PS un'), { valeur: null, erreurAnalyse: "« PS un » n'est pas un entier" });
+  assert.deepEqual(normaliserValeur('poids', 'soixante'), { valeur: null, erreurAnalyse: "« soixante » n'est pas un poids en kg" });
   assert.equal(normaliserValeur('dateNaissance', '31/02/1956', { formatDate: 'date-francaise' }).valeur, null);
 });
 
@@ -22,15 +22,15 @@ test('transcrit une extraction en disposition longue avec ses dates et sa proven
       source: 'dxcare',
       table: 'c_quest',
       lignes: [
-        { ID_REPONSE: 'CQ-1', NIP: 'P1', CODE_QUESTION: 'OMS', VALEUR: '1', DATE_EVT: '2026-09-12', DATE_SAISIE: '2026-09-12T10:32:00', AUTEUR: 'MED-1' },
+        { ID_REPONSE: 'CQ-1', NIP: 'P1', CODE_QUESTION: 'POIDS', VALEUR: '68', DATE_EVT: '2026-09-12', DATE_SAISIE: '2026-09-12T10:32:00', AUTEUR: 'MED-1' },
         { ID_REPONSE: 'CQ-2', NIP: 'P1', CODE_QUESTION: 'TABAC', VALEUR: 'Non', DATE_EVT: '2026-09-12', DATE_SAISIE: '2026-09-12T10:32:00', AUTEUR: 'MED-1' },
       ],
     },
     contexte,
   );
   assert.equal(valeurs.length, 1);
-  assert.equal(valeurs[0].attribut, 'statutOms');
-  assert.equal(valeurs[0].valeur, 1);
+  assert.equal(valeurs[0].attribut, 'poids');
+  assert.equal(valeurs[0].valeur, 68);
   assert.equal(valeurs[0].dateValeur, '2026-09-12');
   assert.equal(valeurs[0].dateEnregistrement, '2026-09-12T10:32:00');
   assert.equal(valeurs[0].dateIntegration, '2026-10-01T08:00:00');

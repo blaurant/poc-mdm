@@ -25,7 +25,7 @@ curl -X POST localhost:3000/integrer-donnees --data @demo/fixtures/dxcare-c_ques
 curl "localhost:3000/extraire-donnees?identifiantPatient=99000002"
 curl "localhost:3000/extraire-donnees?identifiantPatient=99000002&aLaDate=2026-08-01"
 curl "localhost:3000/extraire-donnees?identifiantPatient=99000002&aLaDate=2026-09-20&connuLe=2026-10-05T09:00:00"
-curl -X POST localhost:3000/regles-qualite --data '{"identifiant":"OMS-FRAICHEUR-RCP","attribut":"statutOms","dimension":"fraicheur","typeControle":"anciennete-max-jours","parametres":{"jours":15},"severite":"avertissement","usages":["rcp"],"auteur":"data-steward","dateEffet":"2026-10-01"}'
+curl -X POST localhost:3000/regles-qualite --data '{"identifiant":"POIDS-FRAICHEUR-RCP","attribut":"poids","dimension":"fraicheur","typeControle":"anciennete-max-jours","parametres":{"jours":15},"severite":"avertissement","usages":["rcp"],"auteur":"data-steward","dateEffet":"2026-10-01"}'
 ```
 
 ## Architecture concentrique

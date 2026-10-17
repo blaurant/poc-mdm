@@ -14,12 +14,12 @@ export const ATTRIBUTS = Object.freeze({
     temporel: false,
     description: 'Date de naissance du patient',
   }),
-  statutOms: Object.freeze({
-    cle: 'statutOms',
+  poids: Object.freeze({
+    cle: 'poids',
     entite: 'patient',
-    typeValeur: 'entier',
+    typeValeur: 'masse-kg',
     temporel: true,
-    description: 'Statut de performance OMS / ECOG, de 0 (pleinement actif) à 5 (décédé)',
+    description: 'Poids du patient, en kilogrammes',
   }),
   localisationPrimitive: Object.freeze({
     cle: 'localisationPrimitive',
@@ -68,10 +68,13 @@ export function normaliserValeur(cleAttribut, brute, options = {}) {
       const valeur = parseDate(texte, options.formatDate ?? 'date-iso');
       return valeur ? { valeur, erreurAnalyse: null } : { valeur: null, erreurAnalyse: `« ${texte} » n'est pas une date valide` };
     }
-    case 'entier':
-      return /^-?\d+$/.test(texte)
-        ? { valeur: Number(texte), erreurAnalyse: null }
-        : { valeur: null, erreurAnalyse: `« ${texte} » n'est pas un entier` };
+    case 'masse-kg': {
+      // Decimal comma and unit are accepted: "68,5 kg" -> 68.5
+      const nombre = /^(\d+(?:[.,]\d+)?)\s*(?:kg)?$/i.exec(texte);
+      return nombre
+        ? { valeur: Number(nombre[1].replace(',', '.')), erreurAnalyse: null }
+        : { valeur: null, erreurAnalyse: `« ${texte} » n'est pas un poids en kg` };
+    }
     case 'topographie-cim-o-3':
       // Sources often append the label: "C34.1 - Lobe supérieur" -> "C34.1"
       return { valeur: texte.split(' - ')[0].trim().toUpperCase(), erreurAnalyse: null };

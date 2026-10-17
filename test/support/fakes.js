@@ -42,9 +42,9 @@ export function uneValeur(surcharges = {}) {
   const { provenance, ...reste } = surcharges;
   return creerValeurSourcee({
     identifiantPatient: 'P1',
-    attribut: 'statutOms',
-    valeur: 1,
-    valeurBrute: '1',
+    attribut: 'poids',
+    valeur: 68,
+    valeurBrute: '68',
     dateValeur: '2026-09-12',
     dateEnregistrement: '2026-09-12T10:00:00',
     dateIntegration: '2026-10-01T08:00:00',
@@ -64,12 +64,12 @@ export function uneValeur(surcharges = {}) {
 /** Builds a quality rule with sensible defaults for tests. */
 export function uneRegle(surcharges = {}) {
   return creerRegleQualite({
-    identifiant: 'OMS-INTERVALLE',
+    identifiant: 'POIDS-PLAUSIBLE',
     version: 1,
-    attribut: 'statutOms',
-    dimension: 'conformite',
+    attribut: 'poids',
+    dimension: 'plausibilite',
     typeControle: 'intervalle',
-    parametres: { min: 0, max: 5 },
+    parametres: { min: 1, max: 300 },
     severite: 'bloquante',
     auteur: 'bureau-donnees',
     dateEffet: '2026-01-01',
@@ -81,7 +81,7 @@ export function uneRegle(surcharges = {}) {
 /** A freshness rule for the RCP usage, used by several tests. */
 export function uneRegleFraicheurRcp(surcharges = {}) {
   return uneRegle({
-    identifiant: 'OMS-FRAICHEUR-RCP',
+    identifiant: 'POIDS-FRAICHEUR-RCP',
     dimension: 'fraicheur',
     typeControle: 'anciennete-max-jours',
     parametres: { jours: 15 },

@@ -37,7 +37,7 @@ export const CORRESPONDANCES_SOURCES = Object.freeze({
     dateValeur: { champ: 'DATE_EVT', format: 'date-iso' },
     dateEnregistrement: { champ: 'DATE_SAISIE', format: 'date-heure-iso' },
     champAuteur: 'AUTEUR',
-    codes: { OMS: 'statutOms', T: 'categorieT', LOCALISATION_PRIMITIVE: 'localisationPrimitive' },
+    codes: { POIDS: 'poids', T: 'categorieT', LOCALISATION_PRIMITIVE: 'localisationPrimitive' },
   },
   'simbad/patient': {
     source: 'simbad',
@@ -62,7 +62,7 @@ export const CORRESPONDANCES_SOURCES = Object.freeze({
     dateValeur: { champ: 'DT_EVT', format: 'date-francaise' },
     dateEnregistrement: { champ: 'DT_SAISIE', format: 'date-francaise' },
     champAuteur: 'AUTEUR',
-    codes: { OMS: 'statutOms' },
+    codes: { POIDS: 'poids' },
   },
   'nlp/comptes_rendus_consultation': {
     source: 'nlp',
@@ -79,7 +79,7 @@ export const CORRESPONDANCES_SOURCES = Object.freeze({
     champAuteur: 'DOCUMENT_AUTHOR',
     champConfiance: 'CONFIDENCE',
     champsDocument: { identifiant: 'DOCUMENT_ID', systeme: 'DOCUMENT_SYSTEM', type: 'DOCUMENT_TYPE', url: 'DOCUMENT_URL' },
-    codes: { performance_status: 'statutOms', t_stage: 'categorieT', primary_site: 'localisationPrimitive' },
+    codes: { body_weight: 'poids', t_stage: 'categorieT', primary_site: 'localisationPrimitive' },
   },
 });
 

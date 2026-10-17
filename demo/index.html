@@ -58,7 +58,7 @@ html{scroll-behavior:smooth}
   <li><a href="#integration">Étape 0 – Intégration des extractions sources</a></li>
   <li>Les cas de la note :
     <ul class="cases">
-      <li><a href="#cas-1"><b>Cas 1 – Deux sources pour le même patient : une évolution, pas un conflit (statut OMS)</b></a><br><span>Trois sources donnent un statut OMS à des dates différentes : le MDM reconnaît une évolution et garde l’historique.</span></li>
+      <li><a href="#cas-1"><b>Cas 1 – Deux sources pour le même patient : une évolution, pas un conflit (poids)</b></a><br><span>Trois sources donnent un poids à des dates différentes : le MDM reconnaît une évolution et garde l’historique.</span></li>
       <li><a href="#cas-2"><b>Cas 2 – Un vrai conflit à la même date de valeur (T du TNM)</b></a><br><span>Deux sources divergent à la même date : le MDM retient la plus fiable, baisse la confiance et demande une revue.</span></li>
       <li><a href="#cas-3"><b>Cas 3 – Conflit d'identité sur une donnée intemporelle (date de naissance)</b></a><br><span>DXCare et Simbad ne donnent pas la même date de naissance : conflit sur une donnée intemporelle, formats normalisés.</span></li>
       <li><a href="#cas-4"><b>Cas 4 – Contrôle de conformité : une valeur rejetée mais conservée (localisation primitive)</b></a><br><span>Un code CIM-O-3 invalide est rejeté par une règle bloquante mais reste visible ; la valeur du compte rendu est retenue.</span></li>
@@ -202,8 +202,8 @@ html{scroll-behavior:smooth}
 </table>
 
 <section class="case" id="cas-1">
-<h2>Cas 1 – Deux sources pour le même patient : une évolution, pas un conflit (statut OMS)</h2>
-<div class="shows">Le statut OMS arrive de trois sources. Simbad dit 2 au 03/06 ; DXCare et le compte rendu (NLP) disent 1 au 12/09. Les dates de valeur étant différentes, le MDM y voit une <b>évolution</b> : la valeur courante est 1 (deux sources concordantes, confiance haute) et la valeur 2 passe dans l'historique.</div>
+<h2>Cas 1 – Deux sources pour le même patient : une évolution, pas un conflit (poids)</h2>
+<div class="shows">Le poids arrive de trois sources. Simbad dit 72 kg au 03/06 ; DXCare et le compte rendu (NLP) disent 68 kg au 12/09. Les dates de valeur étant différentes, le MDM y voit une <b>évolution</b> (une perte de poids) : la valeur courante est 68 kg (deux sources concordantes, confiance haute) et 72 kg passe dans l'historique.</div>
 <div class="cols">
   <div class="col"><h3>JSON initial (sources)</h3><div class="json"><div class="lab">Entrée 1</div><pre>{
   <span class="k">"source"</span>: <span class="s">"dxcare"</span>,
@@ -214,8 +214,8 @@ html{scroll-behavior:smooth}
       <span class="k">"ID_REPONSE"</span>: <span class="s">"CQ-00101"</span>,
       <span class="k">"NIP"</span>: <span class="s">"99000002"</span>,
       <span class="k">"FORMULAIRE"</span>: <span class="s">"CONSULT_ONCO"</span>,
-      <span class="k">"CODE_QUESTION"</span>: <span class="s">"OMS"</span>,
-      <span class="k">"VALEUR"</span>: <span class="s">"1"</span>,
+      <span class="k">"CODE_QUESTION"</span>: <span class="s">"POIDS"</span>,
+      <span class="k">"VALEUR"</span>: <span class="s">"68"</span>,
       <span class="k">"DATE_EVT"</span>: <span class="s">"2026-09-12"</span>,
       <span class="k">"DATE_SAISIE"</span>: <span class="s">"2026-09-12T10:32:00"</span>,
       <span class="k">"AUTEUR"</span>: <span class="s">"MED-0233"</span>
@@ -229,8 +229,8 @@ html{scroll-behavior:smooth}
     {
       <span class="k">"ID_OBS"</span>: <span class="s">"SB-OBS-0007"</span>,
       <span class="k">"NUM_PATIENT"</span>: <span class="s">"99000002"</span>,
-      <span class="k">"CODE"</span>: <span class="s">"OMS"</span>,
-      <span class="k">"VALEUR"</span>: <span class="s">"2"</span>,
+      <span class="k">"CODE"</span>: <span class="s">"POIDS"</span>,
+      <span class="k">"VALEUR"</span>: <span class="s">"72"</span>,
       <span class="k">"DT_EVT"</span>: <span class="s">"03/06/2026"</span>,
       <span class="k">"DT_SAISIE"</span>: <span class="s">"01/07/2026"</span>,
       <span class="k">"AUTEUR"</span>: <span class="l">null</span>
@@ -244,9 +244,9 @@ html{scroll-behavior:smooth}
     {
       <span class="k">"EXTRACTION_ID"</span>: <span class="s">"NLP-0001"</span>,
       <span class="k">"PATIENT_ID"</span>: <span class="s">"99000002"</span>,
-      <span class="k">"ENTITY"</span>: <span class="s">"performance_status"</span>,
-      <span class="k">"TEXT_SPAN"</span>: <span class="s">"Etat général conservé, PS 1"</span>,
-      <span class="k">"VALUE"</span>: <span class="s">"1"</span>,
+      <span class="k">"ENTITY"</span>: <span class="s">"body_weight"</span>,
+      <span class="k">"TEXT_SPAN"</span>: <span class="s">"Poids : 68 kg (72 kg en juin)"</span>,
+      <span class="k">"VALUE"</span>: <span class="s">"68"</span>,
       <span class="k">"CONFIDENCE"</span>: <span class="n">0.87</span>,
       <span class="k">"DOCUMENT_ID"</span>: <span class="s">"DX-DOC-5678"</span>,
       <span class="k">"DOCUMENT_SYSTEM"</span>: <span class="s">"dxcare"</span>,
@@ -259,9 +259,9 @@ html{scroll-behavior:smooth}
   ]
 }</pre></div></div>
   <div class="col"><h3>JSON final (MDM)</h3><div class="json"><div class="lab">GET /extraire-donnees → attribut</div><pre>{
-  <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+  <span class="k">"attribut"</span>: <span class="s">"poids"</span>,
   <span class="k">"temporel"</span>: <span class="l">true</span>,
-  <span class="k">"valeur"</span>: <span class="n">1</span>,
+  <span class="k">"valeur"</span>: <span class="n">68</span>,
   <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
   <span class="k">"statut"</span>: <span class="s">"consolidee"</span>,
   <span class="k">"aRevoir"</span>: <span class="l">false</span>,
@@ -293,9 +293,9 @@ html{scroll-behavior:smooth}
         <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
       },
       {
-        <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+        <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
         <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-        <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+        <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
         <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
         <span class="k">"usages"</span>: [],
         <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -304,8 +304,8 @@ html{scroll-behavior:smooth}
   },
   <span class="k">"sources"</span>: [
     {
-      <span class="k">"valeur"</span>: <span class="n">1</span>,
-      <span class="k">"valeurBrute"</span>: <span class="s">"1"</span>,
+      <span class="k">"valeur"</span>: <span class="n">68</span>,
+      <span class="k">"valeurBrute"</span>: <span class="s">"68"</span>,
       <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
       <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-09-12T10:32:00"</span>,
       <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -336,9 +336,9 @@ html{scroll-behavior:smooth}
           <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
         },
         {
-          <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+          <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
           <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-          <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+          <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
           <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
           <span class="k">"usages"</span>: [],
           <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -346,8 +346,8 @@ html{scroll-behavior:smooth}
       ]
     },
     {
-      <span class="k">"valeur"</span>: <span class="n">1</span>,
-      <span class="k">"valeurBrute"</span>: <span class="s">"Etat général conservé, PS 1"</span>,
+      <span class="k">"valeur"</span>: <span class="n">68</span>,
+      <span class="k">"valeurBrute"</span>: <span class="s">"Poids : 68 kg (72 kg en juin)"</span>,
       <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
       <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-09-13T02:00:00"</span>,
       <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -385,9 +385,9 @@ html{scroll-behavior:smooth}
           <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
         },
         {
-          <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+          <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
           <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-          <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+          <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
           <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
           <span class="k">"usages"</span>: [],
           <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -399,13 +399,13 @@ html{scroll-behavior:smooth}
   <span class="k">"rejetees"</span>: [],
   <span class="k">"historique"</span>: [
     {
-      <span class="k">"valeur"</span>: <span class="n">2</span>,
+      <span class="k">"valeur"</span>: <span class="n">72</span>,
       <span class="k">"dateValeur"</span>: <span class="s">"2026-06-03"</span>,
       <span class="k">"statut"</span>: <span class="s">"consolidee"</span>,
       <span class="k">"sources"</span>: [
         {
-          <span class="k">"valeur"</span>: <span class="n">2</span>,
-          <span class="k">"valeurBrute"</span>: <span class="s">"2"</span>,
+          <span class="k">"valeur"</span>: <span class="n">72</span>,
+          <span class="k">"valeurBrute"</span>: <span class="s">"72"</span>,
           <span class="k">"dateValeur"</span>: <span class="s">"2026-06-03"</span>,
           <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-07-01T00:00:00"</span>,
           <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -436,9 +436,9 @@ html{scroll-behavior:smooth}
               <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
             },
             {
-              <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+              <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
               <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-              <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+              <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
               <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
               <span class="k">"usages"</span>: [],
               <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -980,12 +980,12 @@ html{scroll-behavior:smooth}
 </section>
 <section class="case" id="cas-5">
 <h2>Cas 5 – Une règle ajoutée à chaud par le métier, puis modifiée</h2>
-<div class="shows">Un data steward ajoute, sans redéploiement, la règle « pour une RCP, l'OMS doit dater de moins de 15 jours ». À la date du jour (01/10/2026), l'OMS du 12/09 a 19 jours : la valeur n'est plus <b>apte à la RCP</b>, mais reste apte à la recherche. La règle passe ensuite à 30 jours (version 2) : la valeur redevient apte, et chaque contrôle indique la version de la règle appliquée.</div>
+<div class="shows">Un data steward ajoute, sans redéploiement, la règle « pour une RCP, le poids doit dater de moins de 15 jours » (il sert au calcul des doses). À la date du jour (01/10/2026), le poids du 12/09 a 19 jours : la valeur n'est plus <b>apte à la RCP</b>, mais reste apte à la recherche. La règle passe ensuite à 30 jours (version 2) : la valeur redevient apte, et chaque contrôle indique la version de la règle appliquée.</div>
 <div class="cols">
   <div class="col"><h3>JSON initial (sources)</h3><div class="json"><div class="lab">Entrée 1</div><pre>{
   <span class="k">"POST /regles-qualite (v1)"</span>: {
-    <span class="k">"identifiant"</span>: <span class="s">"OMS-FRAICHEUR-RCP"</span>,
-    <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+    <span class="k">"identifiant"</span>: <span class="s">"POIDS-FRAICHEUR-RCP"</span>,
+    <span class="k">"attribut"</span>: <span class="s">"poids"</span>,
     <span class="k">"dimension"</span>: <span class="s">"fraicheur"</span>,
     <span class="k">"typeControle"</span>: <span class="s">"anciennete-max-jours"</span>,
     <span class="k">"parametres"</span>: {
@@ -995,7 +995,7 @@ html{scroll-behavior:smooth}
     <span class="k">"usages"</span>: [
       <span class="s">"rcp"</span>
     ],
-    <span class="k">"description"</span>: <span class="s">"Pour une RCP, le statut OMS doit dater de moins de 15 jours"</span>,
+    <span class="k">"description"</span>: <span class="s">"Pour une RCP, le poids doit dater de moins de 15 jours"</span>,
     <span class="k">"auteur"</span>: <span class="s">"data-steward-oncologie"</span>,
     <span class="k">"dateEffet"</span>: <span class="s">"2026-10-01"</span>
   }
@@ -1034,18 +1034,18 @@ html{scroll-behavior:smooth}
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
     },
     {
-      <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+      <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
       <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-      <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+      <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
       <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
       <span class="k">"usages"</span>: [],
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
     }
   ]
 }</pre></div><div class="json"><div class="lab">Règle enregistrée (v1)</div><pre>{
-  <span class="k">"identifiant"</span>: <span class="s">"OMS-FRAICHEUR-RCP"</span>,
+  <span class="k">"identifiant"</span>: <span class="s">"POIDS-FRAICHEUR-RCP"</span>,
   <span class="k">"version"</span>: <span class="n">1</span>,
-  <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+  <span class="k">"attribut"</span>: <span class="s">"poids"</span>,
   <span class="k">"dimension"</span>: <span class="s">"fraicheur"</span>,
   <span class="k">"typeControle"</span>: <span class="s">"anciennete-max-jours"</span>,
   <span class="k">"parametres"</span>: {
@@ -1055,7 +1055,7 @@ html{scroll-behavior:smooth}
   <span class="k">"usages"</span>: [
     <span class="s">"rcp"</span>
   ],
-  <span class="k">"description"</span>: <span class="s">"Pour une RCP, le statut OMS doit dater de moins de 15 jours"</span>,
+  <span class="k">"description"</span>: <span class="s">"Pour une RCP, le poids doit dater de moins de 15 jours"</span>,
   <span class="k">"auteur"</span>: <span class="s">"data-steward-oncologie"</span>,
   <span class="k">"dateEffet"</span>: <span class="s">"2026-10-01"</span>,
   <span class="k">"active"</span>: <span class="l">true</span>,
@@ -1088,7 +1088,7 @@ html{scroll-behavior:smooth}
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
     },
     {
-      <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-FRAICHEUR-RCP"</span>,
+      <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-FRAICHEUR-RCP"</span>,
       <span class="k">"versionRegle"</span>: <span class="n">1</span>,
       <span class="k">"dimension"</span>: <span class="s">"fraicheur"</span>,
       <span class="k">"severite"</span>: <span class="s">"avertissement"</span>,
@@ -1098,9 +1098,9 @@ html{scroll-behavior:smooth}
       <span class="k">"resultat"</span>: <span class="s">"echec"</span>
     },
     {
-      <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+      <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
       <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-      <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+      <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
       <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
       <span class="k">"usages"</span>: [],
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1134,7 +1134,7 @@ html{scroll-behavior:smooth}
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
     },
     {
-      <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-FRAICHEUR-RCP"</span>,
+      <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-FRAICHEUR-RCP"</span>,
       <span class="k">"versionRegle"</span>: <span class="n">2</span>,
       <span class="k">"dimension"</span>: <span class="s">"fraicheur"</span>,
       <span class="k">"severite"</span>: <span class="s">"avertissement"</span>,
@@ -1144,9 +1144,9 @@ html{scroll-behavior:smooth}
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
     },
     {
-      <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+      <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
       <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-      <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+      <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
       <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
       <span class="k">"usages"</span>: [],
       <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1159,15 +1159,15 @@ html{scroll-behavior:smooth}
 </section>
 <section class="case" id="cas-6">
 <h2>Cas 6 – Consultation « à une date » (as of)</h2>
-<div class="shows">La même question posée au 01/08/2026 renvoie ce que l'on savait à cette date : seul Simbad avait enregistré un OMS (2, au 03/06). Les valeurs DXCare et NLP, enregistrées en septembre, n'existent pas encore, et la règle de fraîcheur, en vigueur à partir du 01/10, ne s'applique pas.</div>
+<div class="shows">La même question posée au 01/08/2026 renvoie ce que l'on savait à cette date : seul Simbad avait enregistré un poids (72 kg, au 03/06). Les valeurs DXCare et NLP, enregistrées en septembre, n'existent pas encore, et la règle de fraîcheur, en vigueur à partir du 01/10, ne s'applique pas.</div>
 <div class="cols">
   <div class="col"><h3>JSON initial (sources)</h3><div class="json"><div class="lab">Entrée 1</div><pre>{
   <span class="k">"requete"</span>: <span class="s">"GET /extraire-donnees?identifiantPatient=99000002&amp;aLaDate=2026-08-01"</span>
 }</pre></div></div>
-  <div class="col"><h3>JSON final (MDM)</h3><div class="json"><div class="lab">Statut OMS au 01/08/2026</div><pre>{
-  <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+  <div class="col"><h3>JSON final (MDM)</h3><div class="json"><div class="lab">Poids au 01/08/2026</div><pre>{
+  <span class="k">"attribut"</span>: <span class="s">"poids"</span>,
   <span class="k">"temporel"</span>: <span class="l">true</span>,
-  <span class="k">"valeur"</span>: <span class="n">2</span>,
+  <span class="k">"valeur"</span>: <span class="n">72</span>,
   <span class="k">"dateValeur"</span>: <span class="s">"2026-06-03"</span>,
   <span class="k">"statut"</span>: <span class="s">"consolidee"</span>,
   <span class="k">"aRevoir"</span>: <span class="l">false</span>,
@@ -1199,9 +1199,9 @@ html{scroll-behavior:smooth}
         <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
       },
       {
-        <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+        <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
         <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-        <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+        <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
         <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
         <span class="k">"usages"</span>: [],
         <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1210,8 +1210,8 @@ html{scroll-behavior:smooth}
   },
   <span class="k">"sources"</span>: [
     {
-      <span class="k">"valeur"</span>: <span class="n">2</span>,
-      <span class="k">"valeurBrute"</span>: <span class="s">"2"</span>,
+      <span class="k">"valeur"</span>: <span class="n">72</span>,
+      <span class="k">"valeurBrute"</span>: <span class="s">"72"</span>,
       <span class="k">"dateValeur"</span>: <span class="s">"2026-06-03"</span>,
       <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-07-01T00:00:00"</span>,
       <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -1242,9 +1242,9 @@ html{scroll-behavior:smooth}
           <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
         },
         {
-          <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+          <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
           <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-          <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+          <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
           <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
           <span class="k">"usages"</span>: [],
           <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1255,8 +1255,8 @@ html{scroll-behavior:smooth}
   <span class="k">"alternatives"</span>: [],
   <span class="k">"rejetees"</span>: [],
   <span class="k">"historique"</span>: []
-}</pre></div><div class="json"><div class="lab">Pour comparaison : statut OMS au 01/10/2026</div><pre>{
-  <span class="k">"valeur"</span>: <span class="n">1</span>,
+}</pre></div><div class="json"><div class="lab">Pour comparaison : poids au 01/10/2026</div><pre>{
+  <span class="k">"valeur"</span>: <span class="n">68</span>,
   <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
   <span class="k">"statut"</span>: <span class="s">"consolidee"</span>
 }</pre></div></div>
@@ -1266,7 +1266,7 @@ html{scroll-behavior:smooth}
 </section>
 <section class="case" id="cas-7">
 <h2>Cas 7 – Bitemporalité : ce que le MDM montrait à la RCP, et ce que l’on sait aujourd’hui</h2>
-<div class="shows">Le 20/09, la RCP consulte le MDM : <b>OMS 1</b> (consultation du 12/09), apte à la RCP. Le 02/10, un OMS 2 de la consultation du 18/09 est saisi en retard ; le 05/10, un data steward crée une règle « OMS de moins de 7 jours pour une RCP », en vigueur depuis le 01/09. Deux questions, deux réponses : <b>que montrait le MDM le 20/09 ?</b> (<code>aLaDate=2026-09-20</code>) → OMS 1, sans la nouvelle règle ; <b>que sait-on aujourd'hui du 20/09 ?</b> (<code>&amp;connuLe=2026-10-05T09:00:00</code>) → OMS 2 au 18/09, nouvelle règle appliquée.</div>
+<div class="shows">Le 20/09, la RCP consulte le MDM : <b>68 kg</b> (consultation du 12/09), apte à la RCP. Le 02/10, un poids de 62 kg mesuré à la consultation du 18/09 est saisi en retard ; le 05/10, un data steward crée une règle « poids de moins de 7 jours pour une RCP », en vigueur depuis le 01/09. Deux questions, deux réponses : <b>que montrait le MDM le 20/09 ?</b> (<code>aLaDate=2026-09-20</code>) → 68 kg, sans la nouvelle règle ; <b>que sait-on aujourd'hui du 20/09 ?</b> (<code>&amp;connuLe=2026-10-05T09:00:00</code>) → 62 kg au 18/09, nouvelle règle appliquée.</div>
 <div class="cols">
   <div class="col"><h3>JSON initial (sources)</h3><div class="json"><div class="lab">Entrée 1</div><pre>{
   <span class="k">"POST /integrer-donnees (05/10)"</span>: {
@@ -1278,8 +1278,8 @@ html{scroll-behavior:smooth}
         <span class="k">"ID_REPONSE"</span>: <span class="s">"CQ-00105"</span>,
         <span class="k">"NIP"</span>: <span class="s">"99000002"</span>,
         <span class="k">"FORMULAIRE"</span>: <span class="s">"CONSULT_ONCO"</span>,
-        <span class="k">"CODE_QUESTION"</span>: <span class="s">"OMS"</span>,
-        <span class="k">"VALEUR"</span>: <span class="s">"2"</span>,
+        <span class="k">"CODE_QUESTION"</span>: <span class="s">"POIDS"</span>,
+        <span class="k">"VALEUR"</span>: <span class="s">"62"</span>,
         <span class="k">"DATE_EVT"</span>: <span class="s">"2026-09-18"</span>,
         <span class="k">"DATE_SAISIE"</span>: <span class="s">"2026-10-02T11:15:00"</span>,
         <span class="k">"AUTEUR"</span>: <span class="s">"MED-0233"</span>
@@ -1288,8 +1288,8 @@ html{scroll-behavior:smooth}
   }
 }</pre></div><div class="json"><div class="lab">Entrée 2</div><pre>{
   <span class="k">"POST /regles-qualite (05/10)"</span>: {
-    <span class="k">"identifiant"</span>: <span class="s">"OMS-RECENT-RCP"</span>,
-    <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+    <span class="k">"identifiant"</span>: <span class="s">"POIDS-RECENT-RCP"</span>,
+    <span class="k">"attribut"</span>: <span class="s">"poids"</span>,
     <span class="k">"dimension"</span>: <span class="s">"fraicheur"</span>,
     <span class="k">"typeControle"</span>: <span class="s">"anciennete-max-jours"</span>,
     <span class="k">"parametres"</span>: {
@@ -1299,20 +1299,20 @@ html{scroll-behavior:smooth}
     <span class="k">"usages"</span>: [
       <span class="s">"rcp"</span>
     ],
-    <span class="k">"description"</span>: <span class="s">"Pour une RCP, le statut OMS doit dater de moins de 7 jours"</span>,
+    <span class="k">"description"</span>: <span class="s">"Pour une RCP, le poids doit dater de moins de 7 jours"</span>,
     <span class="k">"auteur"</span>: <span class="s">"data-steward-oncologie"</span>,
     <span class="k">"dateEffet"</span>: <span class="s">"2026-09-01"</span>
   }
 }</pre></div></div>
   <div class="col"><h3>JSON final (MDM)</h3><div class="json"><div class="lab">Règle enregistrée : en vigueur au 01/09, définie le 05/10</div><pre>{
-  <span class="k">"identifiant"</span>: <span class="s">"OMS-RECENT-RCP"</span>,
+  <span class="k">"identifiant"</span>: <span class="s">"POIDS-RECENT-RCP"</span>,
   <span class="k">"version"</span>: <span class="n">1</span>,
   <span class="k">"dateEffet"</span>: <span class="s">"2026-09-01"</span>,
   <span class="k">"definieLe"</span>: <span class="s">"2026-10-05T09:00:00"</span>
 }</pre></div><div class="json"><div class="lab">Ce que le MDM montrait à la RCP – aLaDate=2026-09-20</div><pre>{
   <span class="k">"aLaDate"</span>: <span class="s">"2026-09-20"</span>,
   <span class="k">"connuLe"</span>: <span class="s">"2026-09-20"</span>,
-  <span class="k">"valeur"</span>: <span class="n">1</span>,
+  <span class="k">"valeur"</span>: <span class="n">68</span>,
   <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
   <span class="k">"sources"</span>: [
     <span class="s">"dxcare CQ-00101, saisi le 2026-09-12T10:32:00"</span>,
@@ -1325,12 +1325,12 @@ html{scroll-behavior:smooth}
   <span class="k">"reglesAppliquees"</span>: [
     <span class="s">"AUTEUR-CONNU v1 : reussi"</span>,
     <span class="s">"DATE-VALEUR-PLAUSIBLE v1 : reussi"</span>,
-    <span class="s">"OMS-INTERVALLE v1 : reussi"</span>
+    <span class="s">"POIDS-PLAUSIBLE v1 : reussi"</span>
   ]
 }</pre></div><div class="json"><div class="lab">Ce que l’on sait aujourd’hui du 20/09 – connuLe=2026-10-05T09:00:00</div><pre>{
   <span class="k">"aLaDate"</span>: <span class="s">"2026-09-20"</span>,
   <span class="k">"connuLe"</span>: <span class="s">"2026-10-05T09:00:00"</span>,
-  <span class="k">"valeur"</span>: <span class="n">2</span>,
+  <span class="k">"valeur"</span>: <span class="n">62</span>,
   <span class="k">"dateValeur"</span>: <span class="s">"2026-09-18"</span>,
   <span class="k">"sources"</span>: [
     <span class="s">"dxcare CQ-00105, saisi le 2026-10-02T11:15:00"</span>
@@ -1342,13 +1342,13 @@ html{scroll-behavior:smooth}
   <span class="k">"reglesAppliquees"</span>: [
     <span class="s">"AUTEUR-CONNU v1 : reussi"</span>,
     <span class="s">"DATE-VALEUR-PLAUSIBLE v1 : reussi"</span>,
-    <span class="s">"OMS-INTERVALLE v1 : reussi"</span>,
-    <span class="s">"OMS-RECENT-RCP v1 : reussi"</span>
+    <span class="s">"POIDS-PLAUSIBLE v1 : reussi"</span>,
+    <span class="s">"POIDS-RECENT-RCP v1 : reussi"</span>
   ]
 }</pre></div></div>
 </div>
 <h3>Hypothèses de ce cas</h3>
-<ul class="hyp"><li>Deux axes de temps, pour les données comme pour les règles : la validité (dateValeur, dateEffet) répond à « à quelle date ? », la connaissance (dateEnregistrement, definieLe) à « su quand ? ».</li><li>« aLaDate » fixe la validité ; « connuLe » fixe la connaissance et vaut aLaDate par défaut : sans connuLe, le MDM rejoue exactement ce qu’il fournissait à cette date.</li><li>Une règle définie après « connuLe » est ignorée, même si sa date d’effet est antérieure : sinon l’OMS du 12/09 (8 jours au 20/09) apparaîtrait a posteriori comme non apte, alors que la RCP l’a vu apte.</li><li>Rien n’est réécrit : la saisie tardive est une nouvelle valeur sourcée, la règle une nouvelle donnée ; les deux réponses restent disponibles indéfiniment.</li></ul>
+<ul class="hyp"><li>Deux axes de temps, pour les données comme pour les règles : la validité (dateValeur, dateEffet) répond à « à quelle date ? », la connaissance (dateEnregistrement, definieLe) à « su quand ? ».</li><li>« aLaDate » fixe la validité ; « connuLe » fixe la connaissance et vaut aLaDate par défaut : sans connuLe, le MDM rejoue exactement ce qu’il fournissait à cette date.</li><li>Une règle définie après « connuLe » est ignorée, même si sa date d’effet est antérieure : sinon le poids du 12/09 (8 jours au 20/09) apparaîtrait a posteriori comme non apte, alors que la RCP l’a vu apte.</li><li>Rien n’est réécrit : la saisie tardive est une nouvelle valeur sourcée, la règle une nouvelle donnée ; les deux réponses restent disponibles indéfiniment.</li></ul>
 </section>
 
 <h2 id="hypotheses">Hypothèses prises pour l'enrichissement</h2>
@@ -1490,10 +1490,10 @@ html{scroll-behavior:smooth}
       <span class="k">"rejetees"</span>: [],
       <span class="k">"historique"</span>: []
     },
-    <span class="k">"statutOms"</span>: {
-      <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+    <span class="k">"poids"</span>: {
+      <span class="k">"attribut"</span>: <span class="s">"poids"</span>,
       <span class="k">"temporel"</span>: <span class="l">true</span>,
-      <span class="k">"valeur"</span>: <span class="n">1</span>,
+      <span class="k">"valeur"</span>: <span class="n">68</span>,
       <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
       <span class="k">"statut"</span>: <span class="s">"consolidee"</span>,
       <span class="k">"aRevoir"</span>: <span class="l">false</span>,
@@ -1525,9 +1525,9 @@ html{scroll-behavior:smooth}
             <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
           },
           {
-            <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+            <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
             <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-            <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+            <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
             <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
             <span class="k">"usages"</span>: [],
             <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1536,8 +1536,8 @@ html{scroll-behavior:smooth}
       },
       <span class="k">"sources"</span>: [
         {
-          <span class="k">"valeur"</span>: <span class="n">1</span>,
-          <span class="k">"valeurBrute"</span>: <span class="s">"1"</span>,
+          <span class="k">"valeur"</span>: <span class="n">68</span>,
+          <span class="k">"valeurBrute"</span>: <span class="s">"68"</span>,
           <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
           <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-09-12T10:32:00"</span>,
           <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -1568,9 +1568,9 @@ html{scroll-behavior:smooth}
               <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
             },
             {
-              <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+              <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
               <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-              <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+              <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
               <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
               <span class="k">"usages"</span>: [],
               <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1578,8 +1578,8 @@ html{scroll-behavior:smooth}
           ]
         },
         {
-          <span class="k">"valeur"</span>: <span class="n">1</span>,
-          <span class="k">"valeurBrute"</span>: <span class="s">"Etat général conservé, PS 1"</span>,
+          <span class="k">"valeur"</span>: <span class="n">68</span>,
+          <span class="k">"valeurBrute"</span>: <span class="s">"Poids : 68 kg (72 kg en juin)"</span>,
           <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
           <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-09-13T02:00:00"</span>,
           <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -1617,9 +1617,9 @@ html{scroll-behavior:smooth}
               <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
             },
             {
-              <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+              <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
               <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-              <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+              <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
               <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
               <span class="k">"usages"</span>: [],
               <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
@@ -1631,13 +1631,13 @@ html{scroll-behavior:smooth}
       <span class="k">"rejetees"</span>: [],
       <span class="k">"historique"</span>: [
         {
-          <span class="k">"valeur"</span>: <span class="n">2</span>,
+          <span class="k">"valeur"</span>: <span class="n">72</span>,
           <span class="k">"dateValeur"</span>: <span class="s">"2026-06-03"</span>,
           <span class="k">"statut"</span>: <span class="s">"consolidee"</span>,
           <span class="k">"sources"</span>: [
             {
-              <span class="k">"valeur"</span>: <span class="n">2</span>,
-              <span class="k">"valeurBrute"</span>: <span class="s">"2"</span>,
+              <span class="k">"valeur"</span>: <span class="n">72</span>,
+              <span class="k">"valeurBrute"</span>: <span class="s">"72"</span>,
               <span class="k">"dateValeur"</span>: <span class="s">"2026-06-03"</span>,
               <span class="k">"dateEnregistrement"</span>: <span class="s">"2026-07-01T00:00:00"</span>,
               <span class="k">"dateIntegration"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
@@ -1668,9 +1668,9 @@ html{scroll-behavior:smooth}
                   <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
                 },
                 {
-                  <span class="k">"identifiantRegle"</span>: <span class="s">"OMS-INTERVALLE"</span>,
+                  <span class="k">"identifiantRegle"</span>: <span class="s">"POIDS-PLAUSIBLE"</span>,
                   <span class="k">"versionRegle"</span>: <span class="n">1</span>,
-                  <span class="k">"dimension"</span>: <span class="s">"conformite"</span>,
+                  <span class="k">"dimension"</span>: <span class="s">"plausibilite"</span>,
                   <span class="k">"severite"</span>: <span class="s">"bloquante"</span>,
                   <span class="k">"usages"</span>: [],
                   <span class="k">"resultat"</span>: <span class="s">"reussi"</span>
