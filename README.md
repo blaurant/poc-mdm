@@ -24,6 +24,7 @@ Exemple avec la gateway démarrée :
 curl -X POST localhost:3000/integrer-donnees --data @demo/fixtures/dxcare-c_quest.json
 curl "localhost:3000/extraire-donnees?identifiantPatient=99000002"
 curl "localhost:3000/extraire-donnees?identifiantPatient=99000002&aLaDate=2026-08-01"
+curl "localhost:3000/extraire-donnees?identifiantPatient=99000002&aLaDate=2026-09-20&connuLe=2026-10-05T09:00:00"
 curl -X POST localhost:3000/regles-qualite --data '{"identifiant":"OMS-FRAICHEUR-RCP","attribut":"statutOms","dimension":"fraicheur","typeControle":"anciennete-max-jours","parametres":{"jours":15},"severite":"avertissement","usages":["rcp"],"auteur":"data-steward","dateEffet":"2026-10-01"}'
 ```
 
@@ -58,7 +59,7 @@ src/
 ```
 
 - **Langage :** le langage du domaine (concepts, attributs, champs du JSON, scénarios, ports) est en français, sans accents dans les identifiants. Le code technique (infrastructure, outils de dates) et les commentaires sont en anglais.
-- **Gateway HTTP :** `POST /integrer-donnees`, `GET /extraire-donnees?identifiantPatient=&aLaDate=`, `POST /regles-qualite`, `GET /health`.
+- **Gateway HTTP :** `POST /integrer-donnees`, `GET /extraire-donnees?identifiantPatient=&aLaDate=&connuLe=` (`aLaDate` : date de validité ; `connuLe` : date de connaissance, par défaut `aLaDate`), `POST /regles-qualite`, `GET /health`.
 - **Règles qualité par défaut :** `config/regles-qualite-par-defaut.json`, chargées au démarrage par le scénario `definirRegleQualite`.
 - **Tests :** ils utilisent des doublures (`test/support/fakes.js`) et l'infrastructure simulée ; aucun service externe.
 

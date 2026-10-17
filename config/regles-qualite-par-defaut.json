@@ -1,68 +1,71 @@
-[
-  {
-    "identifiant": "OMS-INTERVALLE",
-    "attribut": "statutOms",
-    "dimension": "conformite",
-    "typeControle": "intervalle",
-    "parametres": { "min": 0, "max": 5 },
-    "severite": "bloquante",
-    "description": "Le statut OMS / ECOG est un entier de 0 à 5",
-    "auteur": "bureau-donnees",
-    "dateEffet": "2026-01-01"
-  },
-  {
-    "identifiant": "T-FORMAT",
-    "attribut": "categorieT",
-    "dimension": "conformite",
-    "typeControle": "motif",
-    "parametres": { "expression": "^(X|0|is|[1-4][a-d]?)$" },
-    "severite": "bloquante",
-    "description": "La catégorie T vaut X, 0, is, ou 1 à 4 avec une subdivision a-d facultative",
-    "auteur": "bureau-donnees",
-    "dateEffet": "2026-01-01"
-  },
-  {
-    "identifiant": "LOCALISATION-CIM-O-3",
-    "attribut": "localisationPrimitive",
-    "dimension": "conformite",
-    "typeControle": "motif",
-    "parametres": { "expression": "^C\\d{2}\\.\\d$" },
-    "severite": "bloquante",
-    "description": "La localisation primitive est un code topographique CIM-O-3 (Cnn.n)",
-    "auteur": "bureau-donnees",
-    "dateEffet": "2026-01-01"
-  },
-  {
-    "identifiant": "NAISSANCE-PLAUSIBLE",
-    "attribut": "dateNaissance",
-    "dimension": "plausibilite",
-    "typeControle": "intervalle-dates",
-    "parametres": { "min": "1900-01-01" },
-    "severite": "bloquante",
-    "description": "La date de naissance est postérieure au 01/01/1900 et antérieure à la date d'enregistrement",
-    "auteur": "bureau-donnees",
-    "dateEffet": "2026-01-01"
-  },
-  {
-    "identifiant": "DATE-VALEUR-PLAUSIBLE",
-    "attribut": "*",
-    "dimension": "plausibilite",
-    "typeControle": "date-valeur-avant-enregistrement",
-    "parametres": {},
-    "severite": "bloquante",
-    "description": "Une valeur ne peut pas être vraie à une date postérieure à son enregistrement",
-    "auteur": "bureau-donnees",
-    "dateEffet": "2026-01-01"
-  },
-  {
-    "identifiant": "AUTEUR-CONNU",
-    "attribut": "*",
-    "dimension": "completude",
-    "typeControle": "provenance-requise",
-    "parametres": { "champs": ["auteur"] },
-    "severite": "avertissement",
-    "description": "L'auteur de la valeur est connu dans la source",
-    "auteur": "bureau-donnees",
-    "dateEffet": "2026-01-01"
-  }
-]
+{
+  "definieLe": "2026-01-01T00:00:00",
+  "regles": [
+    {
+      "identifiant": "OMS-INTERVALLE",
+      "attribut": "statutOms",
+      "dimension": "conformite",
+      "typeControle": "intervalle",
+      "parametres": { "min": 0, "max": 5 },
+      "severite": "bloquante",
+      "description": "Le statut OMS / ECOG est un entier de 0 à 5",
+      "auteur": "bureau-donnees",
+      "dateEffet": "2026-01-01"
+    },
+    {
+      "identifiant": "T-FORMAT",
+      "attribut": "categorieT",
+      "dimension": "conformite",
+      "typeControle": "motif",
+      "parametres": { "expression": "^(X|0|is|[1-4][a-d]?)$" },
+      "severite": "bloquante",
+      "description": "La catégorie T vaut X, 0, is, ou 1 à 4 avec une subdivision a-d facultative",
+      "auteur": "bureau-donnees",
+      "dateEffet": "2026-01-01"
+    },
+    {
+      "identifiant": "LOCALISATION-CIM-O-3",
+      "attribut": "localisationPrimitive",
+      "dimension": "conformite",
+      "typeControle": "motif",
+      "parametres": { "expression": "^C\\d{2}\\.\\d$" },
+      "severite": "bloquante",
+      "description": "La localisation primitive est un code topographique CIM-O-3 (Cnn.n)",
+      "auteur": "bureau-donnees",
+      "dateEffet": "2026-01-01"
+    },
+    {
+      "identifiant": "NAISSANCE-PLAUSIBLE",
+      "attribut": "dateNaissance",
+      "dimension": "plausibilite",
+      "typeControle": "intervalle-dates",
+      "parametres": { "min": "1900-01-01" },
+      "severite": "bloquante",
+      "description": "La date de naissance est postérieure au 01/01/1900 et antérieure à la date d'enregistrement",
+      "auteur": "bureau-donnees",
+      "dateEffet": "2026-01-01"
+    },
+    {
+      "identifiant": "DATE-VALEUR-PLAUSIBLE",
+      "attribut": "*",
+      "dimension": "plausibilite",
+      "typeControle": "date-valeur-avant-enregistrement",
+      "parametres": {},
+      "severite": "bloquante",
+      "description": "Une valeur ne peut pas être vraie à une date postérieure à son enregistrement",
+      "auteur": "bureau-donnees",
+      "dateEffet": "2026-01-01"
+    },
+    {
+      "identifiant": "AUTEUR-CONNU",
+      "attribut": "*",
+      "dimension": "completude",
+      "typeControle": "provenance-requise",
+      "parametres": { "champs": ["auteur"] },
+      "severite": "avertissement",
+      "description": "L'auteur de la valeur est connu dans la source",
+      "auteur": "bureau-donnees",
+      "dateEffet": "2026-01-01"
+    }
+  ]
+}

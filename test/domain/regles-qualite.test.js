@@ -42,6 +42,16 @@ test('la dernière version en vigueur à la date est retenue, les règles inacti
   assert.deepEqual(selectionnerReglesApplicables(regles, { attribut: 'statutOms', date: '2026-10-01' }).map((r) => r.version), [2]);
 });
 
+test("une version définie après connuLe est ignorée, même avec une date d'effet rétroactive", () => {
+  const regles = [
+    uneRegle({ version: 1, parametres: { min: 0, max: 5 } }),
+    uneRegle({ version: 2, parametres: { min: 0, max: 4 }, dateEffet: '2026-01-01', definieLe: '2026-10-05T09:00:00' }),
+  ];
+  const versions = (connuLe) => selectionnerReglesApplicables(regles, { attribut: 'statutOms', date: '2026-09-20', connuLe }).map((r) => r.version);
+  assert.deepEqual(versions('2026-09-20T23:59:59'), [1]);
+  assert.deepEqual(versions('2026-10-05T09:00:00'), [2]);
+});
+
 test('une définition de règle invalide est refusée', () => {
   assert.throws(() => uneRegle({ dimension: 'beaute' }), (erreur) => erreur instanceof ErreurDomaine && erreur.code === 'REGLE_INVALIDE');
   assert.throws(() => uneRegle({ typeControle: 'motif', parametres: { expression: '(' } }), /expression régulière/);

@@ -22,7 +22,9 @@ export async function createApplication({ clock, store = new InMemoryDocumentSto
     extraireDonnees: (requete) => extraireDonnees(requete, dependances),
     definirRegleQualite: (definition) => definirRegleQualite(definition, dependances),
   };
-  const regles = JSON.parse(await readFile(DEFAULT_RULES, 'utf8'));
-  for (const regle of regles) await scenarios.definirRegleQualite(regle);
+  // Default rules are recorded as defined at the date stated in the file, so that past queries see them.
+  const { definieLe, regles } = JSON.parse(await readFile(DEFAULT_RULES, 'utf8'));
+  const horlogeInitiale = { maintenant: () => definieLe };
+  for (const regle of regles) await definirRegleQualite(regle, { ...dependances, horloge: horlogeInitiale });
   return { scenarios, gateway: createHttpGateway(scenarios) };
 }

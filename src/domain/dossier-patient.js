@@ -3,7 +3,7 @@ import { consoliderAttribut } from './consolidation.js';
 
 /**
  * Builds the enriched record of a patient: every attribute consolidated from all its sources,
- * with quality, provenance and history, as known at `aLaDate`.
+ * with quality, provenance and history, at `aLaDate` as known at `connuLe` (default `aLaDate`).
  *
  * Assumption of the POC: a patient has a single pathology.
  *
@@ -12,13 +12,14 @@ import { consoliderAttribut } from './consolidation.js';
  * @param {ReadonlyArray<import('./valeur-sourcee.js').ValeurSourcee>} entree.valeurs
  * @param {ReadonlyArray<import('./regles-qualite.js').RegleQualite>} entree.regles
  * @param {string} entree.aLaDate - date or date-time
+ * @param {string} [entree.connuLe] - date or date-time, default `aLaDate`
  * @param {string} entree.extraitLe - date-time of the extraction
  */
-export function construireDossierPatient({ identifiantPatient, valeurs, regles, aLaDate, extraitLe }) {
-  const dossier = { identifiantPatient, aLaDate, extraitLe };
+export function construireDossierPatient({ identifiantPatient, valeurs, regles, aLaDate, connuLe, extraitLe }) {
+  const dossier = { identifiantPatient, aLaDate, connuLe: connuLe ?? aLaDate, extraitLe };
   for (const entite of ENTITES) dossier[entite] = {};
   const consolides = Object.values(ATTRIBUTS).map((attribut) =>
-    consoliderAttribut({ attribut: attribut.cle, valeurs, regles, aLaDate }),
+    consoliderAttribut({ attribut: attribut.cle, valeurs, regles, aLaDate, connuLe }),
   );
   for (const consolide of consolides) {
     const { entite, ...reste } = consolide;

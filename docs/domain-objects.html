@@ -146,7 +146,7 @@ code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);
 
   <!-- ===== Bande C : calculé ===== -->
   <rect x="10" y="700" width="1180" height="470" rx="12" fill="#eef4fb" stroke="#c9d8ea"/>
-  <text x="1178" y="1160" text-anchor="end" class="band" fill="#24507f">CALCULÉ À LA DEMANDE par extraireDonnees(identifiantPatient, aLaDate) · jamais stocké</text>
+  <text x="1178" y="1160" text-anchor="end" class="band" fill="#24507f">CALCULÉ À LA DEMANDE par extraireDonnees(identifiantPatient, aLaDate, connuLe) · jamais stocké</text>
 
   <rect x="30" y="745" width="250" height="120" rx="9" fill="#fff" stroke="#24507f" stroke-width="2"/>
   <text x="48" y="769" class="t" fill="#0b3d6e">Fiabilité</text>
@@ -165,7 +165,7 @@ code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);
 
   <rect x="310" y="745" width="480" height="375" rx="9" fill="#fff" stroke="#24507f" stroke-width="2.5"/>
   <text x="328" y="769" class="t" fill="#0b3d6e">Donnée consolidée</text>
-  <text x="328" y="787" class="s">consoliderAttribut({attribut, valeurs, regles, aLaDate})</text>
+  <text x="328" y="787" class="s">consoliderAttribut({attribut, valeurs, regles, aLaDate, connuLe})</text>
   <text x="328" y="813" class="f">attribut · entite · temporel</text>
   <text x="328" y="832" class="f">valeur · dateValeur<tspan class="ty"> : la valeur retenue</tspan></text>
   <text x="328" y="851" class="f">statut<tspan class="ty"> : consolidee|conflit|sans-valeur-valide|</tspan></text>
@@ -194,7 +194,7 @@ code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);
   <rect x="820" y="940" width="350" height="190" rx="9" fill="#0b3d6e"/>
   <text x="838" y="964" class="t" fill="#fff">Dossier patient</text>
   <text x="838" y="982" class="s" style="fill:#cfe0f5">construireDossierPatient(…)</text>
-  <text x="838" y="1006" class="f" style="fill:#fff">identifiantPatient · aLaDate · extraitLe</text>
+  <text x="838" y="1006" class="f" style="fill:#fff">identifiantPatient · aLaDate · connuLe</text>
   <text x="838" y="1025" class="f" style="fill:#fff">patient<tspan style="fill:#cfe0f5"> : {dateNaissance, statutOms}</tspan></text>
   <text x="838" y="1044" class="f" style="fill:#fff">pathologie<tspan style="fill:#cfe0f5"> : {localisationPrimitive,</tspan></text>
   <text x="838" y="1063" class="f" style="fill:#cfe0f5">             categorieT}</text>
@@ -233,7 +233,7 @@ code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);
 <h2>Les choix de modélisation</h2>
 <ul>
   <li><b>Le cœur est la valeur, pas l'entité.</b> L'unité stockée est « ce qu'une source affirme pour un attribut d'un patient, à une date ». Patient et Pathologie n'existent qu'à la lecture, en regroupant les attributs par <code>Attribut.entite</code>.</li>
-  <li><b>On stocke les faits, on calcule la vérité.</b> La consolidation n'est jamais enregistrée : elle est recalculée à chaque extraction. C'est ce qui permet d'appliquer immédiatement une nouvelle version de règle, et de répondre à « que savait-on à telle date ? » (<code>aLaDate</code> filtre sur <code>dateEnregistrement</code> et sur <code>dateEffet</code> des règles).</li>
+  <li><b>On stocke les faits, on calcule la vérité.</b> La consolidation n'est jamais enregistrée : elle est recalculée à chaque extraction. C'est ce qui permet d'appliquer immédiatement une nouvelle version de règle, et de répondre sur deux axes de temps : <code>aLaDate</code> (validité : <code>dateValeur</code>, <code>dateEffet</code> des règles) et <code>connuLe</code> (connaissance : <code>dateEnregistrement</code>, <code>definieLe</code> des règles ; par défaut égal à <code>aLaDate</code>, pour rejouer ce que le MDM fournissait à cette date).</li>
   <li><b>Rien n'est modifié ni effacé.</b> Valeurs sourcées et règles sont immuables ; une correction est une nouvelle valeur, un changement de règle est une nouvelle version.</li>
   <li><b>Les règles sont des données, les contrôles du code.</b> Seuils, sévérité, usages et date d'effet se changent à chaud ; les 6 types de contrôle (<code>TYPES_CONTROLE</code>) sont codés.</li>
   <li><b>Le domaine ne connaît que des ports.</b> <code>DepotValeursSourcees</code>, <code>DepotReglesQualite</code> et <code>Horloge</code> (<code>ports.js</code>) sont des contrats ; les implémentations sont dans l'infrastructure.</li>

@@ -109,14 +109,19 @@ export function creerRegleQualite(definition) {
 
 /**
  * Keeps, for each rule identifier, the latest version in force at the given date for the attribute.
+ * Rules are bitemporal: `date` is compared to `dateEffet` (valid time) and `connuLe` to `definieLe`
+ * (transaction time), so a rule defined later, even with a retroactive effect date, does not change
+ * what was known before it was defined.
  * @param {ReadonlyArray<RegleQualite>} regles
- * @param {{ attribut: string, date: string }} criteres - `date` is a 'YYYY-MM-DD' date
+ * @param {{ attribut: string, date: string, connuLe?: string }} criteres - `date` is a 'YYYY-MM-DD' date,
+ *   `connuLe` a date-time; without `connuLe`, every defined rule is known
  * @returns {RegleQualite[]}
  */
-export function selectionnerReglesApplicables(regles, { attribut, date }) {
+export function selectionnerReglesApplicables(regles, { attribut, date, connuLe }) {
   const dernieres = new Map();
   for (const regle of regles) {
     if (regle.dateEffet > date) continue;
+    if (connuLe && regle.definieLe > connuLe) continue;
     const courante = dernieres.get(regle.identifiant);
     if (!courante || regle.version > courante.version) dernieres.set(regle.identifiant, regle);
   }

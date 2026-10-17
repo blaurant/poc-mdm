@@ -64,6 +64,7 @@ html{scroll-behavior:smooth}
       <li><a href="#cas-4"><b>Cas 4 – Contrôle de conformité : une valeur rejetée mais conservée (localisation primitive)</b></a><br><span>Un code CIM-O-3 invalide est rejeté par une règle bloquante mais reste visible ; la valeur du compte rendu est retenue.</span></li>
       <li><a href="#cas-5"><b>Cas 5 – Une règle ajoutée à chaud par le métier, puis modifiée</b></a><br><span>Un data steward ajoute puis modifie une règle de fraîcheur sans redéploiement : l’aptitude à la RCP change aussitôt.</span></li>
       <li><a href="#cas-6"><b>Cas 6 – Consultation « à une date » (as of)</b></a><br><span>La même question posée au 01/08/2026 renvoie ce que l’on savait à cette date.</span></li>
+      <li><a href="#cas-7"><b>Cas 7 – Bitemporalité : ce que le MDM montrait à la RCP, et ce que l’on sait aujourd’hui</b></a><br><span>Une saisie tardive et une règle rétroactive ne réécrivent pas ce que le MDM a fourni à la RCP du 20/09.</span></li>
     </ul>
   </li>
   <li><a href="#hypotheses">Hypothèses prises pour l'enrichissement</a> et points à débattre</li>
@@ -107,7 +108,7 @@ html{scroll-behavior:smooth}
     <rect x="808" y="300" width="118" height="70" rx="8" fill="#fff" stroke="#24507f" stroke-width="1.5"/>
     <text x="867" y="325" font-size="12.5" font-weight="700" fill="#0b3d6e">extraireDonnees</text>
     <text x="867" y="343" font-size="11" fill="#5b6475">(identifiantPatient,</text>
-    <text x="867" y="359" font-size="11" fill="#5b6475">aLaDate) → dossier</text>
+    <text x="867" y="359" font-size="11" fill="#5b6475">aLaDate, connuLe)</text>
     <text x="586" y="505" text-anchor="end" font-size="11.5" fill="#24507f">+ definirRegleQualite (règles à chaud)</text>
   </g>
 
@@ -165,7 +166,7 @@ html{scroll-behavior:smooth}
   <tr><td><b>Domaine</b></td><td>11 fichiers, environ 850 lignes. Fonctions pures et objets immuables : modélisation de la donnée enrichie, lignage des sources, fiabilité, règles qualité versionnées, consolidation, dossier patient. Langage du domaine en français.</td></tr>
   <tr><td><b>Scénarios</b></td><td><code>integrerDonnees</code>, <code>extraireDonnees</code> et <code>definirRegleQualite</code> (environ 80 lignes). Ils reçoivent leurs dépendances en paramètre (<b>injection de dépendances</b>) et n'importent que le domaine.</td></tr>
   <tr><td><b>Infrastructure</b></td><td>Entièrement <b>simulée</b> : base documentaire en mémoire au fonctionnement proche de MongoDB (documents sérialisés en JSON), dépôts documentaires, horloge système et horloge fixe, et une <b>gateway HTTP</b> limitée à la traduction requête web → appel de scénario. Une seule gateway (<code>http-gateway.js</code>) porte l'entrée et la sortie.</td></tr>
-  <tr><td><b>API</b></td><td>REST / JSON : <code>POST /integrer-donnees</code>, <code>GET /extraire-donnees?identifiantPatient=&amp;aLaDate=</code>, <code>POST /regles-qualite</code>, <code>GET /health</code>. Les erreurs du domaine deviennent des erreurs HTTP 400 ou 404.</td></tr>
+  <tr><td><b>API</b></td><td>REST / JSON : <code>POST /integrer-donnees</code>, <code>GET /extraire-donnees?identifiantPatient=&amp;aLaDate=&amp;connuLe=</code>, <code>POST /regles-qualite</code>, <code>GET /health</code>. Les erreurs du domaine deviennent des erreurs HTTP 400 ou 404.</td></tr>
   <tr><td><b>Composition</b></td><td><code>src/application.js</code> relie l'infrastructure aux scénarios (« composition root ») et charge les règles qualité par défaut depuis <code>config/regles-qualite-par-defaut.json</code>. <code>src/main.js</code> démarre la gateway.</td></tr>
   <tr><td><b>Tests</b></td><td>30 tests (<code>npm test</code>) : domaine, scénarios avec des doublures (faux dépôts, fausse horloge), infrastructure simulée, gateway avec de faux scénarios, et un test d'architecture qui vérifie la règle de dépendance.</td></tr>
   <tr><td><b>Démonstration</b></td><td>Cette page est générée par <code>npm run demo</code> : le script démarre la vraie gateway sur l'infrastructure simulée et rejoue les cas par des appels HTTP.</td></tr>
@@ -197,6 +198,7 @@ html{scroll-behavior:smooth}
 <tr><td><code>dxcare/c_quest</code></td><td>4</td><td>3</td><td><code>CODE_QUESTION=TABAC</code></td></tr>
 <tr><td><code>simbad/observations</code></td><td>1</td><td>1</td><td>—</td></tr>
 <tr><td><code>nlp/comptes_rendus_consultation</code></td><td>3</td><td>3</td><td>—</td></tr>
+<tr><td><code>dxcare/c_quest</code></td><td>1</td><td>1</td><td>—</td></tr>
 </table>
 
 <section class="case" id="cas-1">
@@ -1260,7 +1262,93 @@ html{scroll-behavior:smooth}
 }</pre></div></div>
 </div>
 <h3>Hypothèses de ce cas</h3>
-<ul class="hyp"><li>« À une date » filtre sur la date d’enregistrement dans la source (dateEnregistrement) : l’historique Simbad étant importé en masse, la date d’intégration dans le MDM ne reflète pas ce qui était connu.</li><li>La date d’intégration (dateIntegration) est conservée pour l’audit du MDM.</li><li>Seules les règles en vigueur à la date demandée (dateEffet) sont appliquées.</li></ul>
+<ul class="hyp"><li>« À une date » filtre sur la date d’enregistrement dans la source (dateEnregistrement) : l’historique Simbad étant importé en masse, la date d’intégration dans le MDM ne reflète pas ce qui était connu.</li><li>La date d’intégration (dateIntegration) est conservée pour l’audit du MDM.</li><li>Seules les règles en vigueur à la date demandée (dateEffet) et déjà définies à cette date (definieLe) sont appliquées.</li><li>Les règles par défaut sont considérées comme définies le 01/01/2026 (config/regles-qualite-par-defaut.json).</li></ul>
+</section>
+<section class="case" id="cas-7">
+<h2>Cas 7 – Bitemporalité : ce que le MDM montrait à la RCP, et ce que l’on sait aujourd’hui</h2>
+<div class="shows">Le 20/09, la RCP consulte le MDM : <b>OMS 1</b> (consultation du 12/09), apte à la RCP. Le 02/10, un OMS 2 de la consultation du 18/09 est saisi en retard ; le 05/10, un data steward crée une règle « OMS de moins de 7 jours pour une RCP », en vigueur depuis le 01/09. Deux questions, deux réponses : <b>que montrait le MDM le 20/09 ?</b> (<code>aLaDate=2026-09-20</code>) → OMS 1, sans la nouvelle règle ; <b>que sait-on aujourd'hui du 20/09 ?</b> (<code>&amp;connuLe=2026-10-05T09:00:00</code>) → OMS 2 au 18/09, nouvelle règle appliquée.</div>
+<div class="cols">
+  <div class="col"><h3>JSON initial (sources)</h3><div class="json"><div class="lab">Entrée 1</div><pre>{
+  <span class="k">"POST /integrer-donnees (05/10)"</span>: {
+    <span class="k">"source"</span>: <span class="s">"dxcare"</span>,
+    <span class="k">"table"</span>: <span class="s">"c_quest"</span>,
+    <span class="k">"extraitLe"</span>: <span class="s">"2026-10-05T02:00:00"</span>,
+    <span class="k">"lignes"</span>: [
+      {
+        <span class="k">"ID_REPONSE"</span>: <span class="s">"CQ-00105"</span>,
+        <span class="k">"NIP"</span>: <span class="s">"99000002"</span>,
+        <span class="k">"FORMULAIRE"</span>: <span class="s">"CONSULT_ONCO"</span>,
+        <span class="k">"CODE_QUESTION"</span>: <span class="s">"OMS"</span>,
+        <span class="k">"VALEUR"</span>: <span class="s">"2"</span>,
+        <span class="k">"DATE_EVT"</span>: <span class="s">"2026-09-18"</span>,
+        <span class="k">"DATE_SAISIE"</span>: <span class="s">"2026-10-02T11:15:00"</span>,
+        <span class="k">"AUTEUR"</span>: <span class="s">"MED-0233"</span>
+      }
+    ]
+  }
+}</pre></div><div class="json"><div class="lab">Entrée 2</div><pre>{
+  <span class="k">"POST /regles-qualite (05/10)"</span>: {
+    <span class="k">"identifiant"</span>: <span class="s">"OMS-RECENT-RCP"</span>,
+    <span class="k">"attribut"</span>: <span class="s">"statutOms"</span>,
+    <span class="k">"dimension"</span>: <span class="s">"fraicheur"</span>,
+    <span class="k">"typeControle"</span>: <span class="s">"anciennete-max-jours"</span>,
+    <span class="k">"parametres"</span>: {
+      <span class="k">"jours"</span>: <span class="n">7</span>
+    },
+    <span class="k">"severite"</span>: <span class="s">"avertissement"</span>,
+    <span class="k">"usages"</span>: [
+      <span class="s">"rcp"</span>
+    ],
+    <span class="k">"description"</span>: <span class="s">"Pour une RCP, le statut OMS doit dater de moins de 7 jours"</span>,
+    <span class="k">"auteur"</span>: <span class="s">"data-steward-oncologie"</span>,
+    <span class="k">"dateEffet"</span>: <span class="s">"2026-09-01"</span>
+  }
+}</pre></div></div>
+  <div class="col"><h3>JSON final (MDM)</h3><div class="json"><div class="lab">Règle enregistrée : en vigueur au 01/09, définie le 05/10</div><pre>{
+  <span class="k">"identifiant"</span>: <span class="s">"OMS-RECENT-RCP"</span>,
+  <span class="k">"version"</span>: <span class="n">1</span>,
+  <span class="k">"dateEffet"</span>: <span class="s">"2026-09-01"</span>,
+  <span class="k">"definieLe"</span>: <span class="s">"2026-10-05T09:00:00"</span>
+}</pre></div><div class="json"><div class="lab">Ce que le MDM montrait à la RCP – aLaDate=2026-09-20</div><pre>{
+  <span class="k">"aLaDate"</span>: <span class="s">"2026-09-20"</span>,
+  <span class="k">"connuLe"</span>: <span class="s">"2026-09-20"</span>,
+  <span class="k">"valeur"</span>: <span class="n">1</span>,
+  <span class="k">"dateValeur"</span>: <span class="s">"2026-09-12"</span>,
+  <span class="k">"sources"</span>: [
+    <span class="s">"dxcare CQ-00101, saisi le 2026-09-12T10:32:00"</span>,
+    <span class="s">"nlp NLP-0001, saisi le 2026-09-13T02:00:00"</span>
+  ],
+  <span class="k">"aptitude"</span>: {
+    <span class="k">"rcp"</span>: <span class="l">true</span>,
+    <span class="k">"recherche"</span>: <span class="l">true</span>
+  },
+  <span class="k">"reglesAppliquees"</span>: [
+    <span class="s">"AUTEUR-CONNU v1 : reussi"</span>,
+    <span class="s">"DATE-VALEUR-PLAUSIBLE v1 : reussi"</span>,
+    <span class="s">"OMS-INTERVALLE v1 : reussi"</span>
+  ]
+}</pre></div><div class="json"><div class="lab">Ce que l’on sait aujourd’hui du 20/09 – connuLe=2026-10-05T09:00:00</div><pre>{
+  <span class="k">"aLaDate"</span>: <span class="s">"2026-09-20"</span>,
+  <span class="k">"connuLe"</span>: <span class="s">"2026-10-05T09:00:00"</span>,
+  <span class="k">"valeur"</span>: <span class="n">2</span>,
+  <span class="k">"dateValeur"</span>: <span class="s">"2026-09-18"</span>,
+  <span class="k">"sources"</span>: [
+    <span class="s">"dxcare CQ-00105, saisi le 2026-10-02T11:15:00"</span>
+  ],
+  <span class="k">"aptitude"</span>: {
+    <span class="k">"rcp"</span>: <span class="l">true</span>,
+    <span class="k">"recherche"</span>: <span class="l">true</span>
+  },
+  <span class="k">"reglesAppliquees"</span>: [
+    <span class="s">"AUTEUR-CONNU v1 : reussi"</span>,
+    <span class="s">"DATE-VALEUR-PLAUSIBLE v1 : reussi"</span>,
+    <span class="s">"OMS-INTERVALLE v1 : reussi"</span>,
+    <span class="s">"OMS-RECENT-RCP v1 : reussi"</span>
+  ]
+}</pre></div></div>
+</div>
+<h3>Hypothèses de ce cas</h3>
+<ul class="hyp"><li>Deux axes de temps, pour les données comme pour les règles : la validité (dateValeur, dateEffet) répond à « à quelle date ? », la connaissance (dateEnregistrement, definieLe) à « su quand ? ».</li><li>« aLaDate » fixe la validité ; « connuLe » fixe la connaissance et vaut aLaDate par défaut : sans connuLe, le MDM rejoue exactement ce qu’il fournissait à cette date.</li><li>Une règle définie après « connuLe » est ignorée, même si sa date d’effet est antérieure : sinon l’OMS du 12/09 (8 jours au 20/09) apparaîtrait a posteriori comme non apte, alors que la RCP l’a vu apte.</li><li>Rien n’est réécrit : la saisie tardive est une nouvelle valeur sourcée, la règle une nouvelle donnée ; les deux réponses restent disponibles indéfiniment.</li></ul>
 </section>
 
 <h2 id="hypotheses">Hypothèses prises pour l'enrichissement</h2>
@@ -1288,6 +1376,7 @@ html{scroll-behavior:smooth}
 <details><summary>Afficher le JSON complet renvoyé par GET /extraire-donnees?identifiantPatient=99000002</summary><div class="json"><div class="lab">Dossier enrichi</div><pre>{
   <span class="k">"identifiantPatient"</span>: <span class="s">"99000002"</span>,
   <span class="k">"aLaDate"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
+  <span class="k">"connuLe"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
   <span class="k">"extraitLe"</span>: <span class="s">"2026-10-01T08:00:00"</span>,
   <span class="k">"patient"</span>: {
     <span class="k">"dateNaissance"</span>: {

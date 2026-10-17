@@ -79,6 +79,38 @@ test('à une date passée, seules les valeurs enregistrées et les règles en vi
   assert.ok(!resultat.qualite.controles.some((controle) => controle.identifiantRegle === 'OMS-FRAICHEUR-RCP'));
 });
 
+test('bitemporalité : ce que le MDM montrait à une date diffère de ce que l’on sait aujourd’hui de cette date', () => {
+  const valeurs = [
+    dxcare({ valeur: 1, dateValeur: '2026-09-12', dateEnregistrement: '2026-09-12T10:32:00' }),
+    // late entry: a consultation of 18/09 typed on 25/09
+    dxcare({ valeur: 2, dateValeur: '2026-09-18', dateEnregistrement: '2026-09-25T14:00:00' }),
+  ];
+  // retroactive rule: defined on 05/10, in force from 01/09
+  const regleTardive = uneRegleFraicheurRcp({ parametres: { jours: 7 }, dateEffet: '2026-09-01', definieLe: '2026-10-05T09:00:00' });
+  const consulter = (connuLe) => consoliderAttribut({ attribut: 'statutOms', valeurs, regles: [...regles, regleTardive], aLaDate: '2026-09-20', connuLe });
+
+  const montre = consulter();
+  assert.equal(montre.valeur, 1);
+  assert.equal(montre.qualite.aptitude.rcp, true);
+  assert.ok(!montre.qualite.controles.some((controle) => controle.identifiantRegle === 'OMS-FRAICHEUR-RCP'));
+
+  const suAujourdhui = consulter('2026-10-05T09:00:00');
+  assert.equal(suAujourdhui.valeur, 2);
+  assert.equal(suAujourdhui.dateValeur, '2026-09-18');
+  assert.ok(suAujourdhui.qualite.controles.some((controle) => controle.identifiantRegle === 'OMS-FRAICHEUR-RCP'));
+});
+
+test('une valeur dont la date de valeur est postérieure à aLaDate est ignorée', () => {
+  const resultat = consoliderAttribut({
+    attribut: 'statutOms',
+    valeurs: [dxcare({ valeur: 1, dateValeur: '2026-09-12' }), dxcare({ valeur: 2, dateValeur: '2026-09-30', dateEnregistrement: '2026-09-30T10:00:00' })],
+    regles,
+    aLaDate: '2026-09-20',
+    connuLe: '2026-10-01',
+  });
+  assert.equal(resultat.valeur, 1);
+});
+
 test('un dossier patient regroupe les attributs par entité et résume ce qui est à revoir', () => {
   const dossier = construireDossierPatient({
     identifiantPatient: 'P1',

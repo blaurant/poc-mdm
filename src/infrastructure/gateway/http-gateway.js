@@ -6,7 +6,7 @@ import { ErreurDomaine } from '../../domain/index.js';
  * and the scenario result into an HTTP response. It holds no business logic.
  *
  *   POST /integrer-donnees    body: raw source extraction   -> integrerDonnees(extraction)
- *   GET  /extraire-donnees?identifiantPatient=&aLaDate=      -> extraireDonnees({ identifiantPatient, aLaDate })
+ *   GET  /extraire-donnees?identifiantPatient=&aLaDate=&connuLe= -> extraireDonnees({ identifiantPatient, aLaDate, connuLe })
  *   POST /regles-qualite      body: rule definition         -> definirRegleQualite(definition)
  *   GET  /health
  *
@@ -20,6 +20,7 @@ export function createHttpGateway(scenarios) {
     'GET /extraire-donnees': async (_request, url) => {
       const requete = { identifiantPatient: url.searchParams.get('identifiantPatient') ?? undefined };
       if (url.searchParams.has('aLaDate')) requete.aLaDate = url.searchParams.get('aLaDate');
+      if (url.searchParams.has('connuLe')) requete.connuLe = url.searchParams.get('connuLe');
       return [200, await scenarios.extraireDonnees(requete)];
     },
     'POST /regles-qualite': async (request) => [201, await scenarios.definirRegleQualite(await readJson(request))],

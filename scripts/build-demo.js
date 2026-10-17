@@ -10,7 +10,8 @@ const NOW = '2026-10-01T08:00:00';
 const PATIENT = '99000002';
 const fixture = async (name) => JSON.parse(await readFile(new URL(`../demo/fixtures/${name}.json`, import.meta.url), 'utf8'));
 
-const { gateway } = await createApplication({ clock: new FixedClock(NOW) });
+const clock = new FixedClock(NOW);
+const { gateway } = await createApplication({ clock });
 gateway.listen(0);
 await once(gateway, 'listening');
 const base = `http://localhost:${gateway.address().port}`;
@@ -139,7 +140,54 @@ cases.push({
   assumptions: [
     '« À une date » filtre sur la date d’enregistrement dans la source (dateEnregistrement) : l’historique Simbad étant importé en masse, la date d’intégration dans le MDM ne reflète pas ce qui était connu.',
     'La date d’intégration (dateIntegration) est conservée pour l’audit du MDM.',
-    'Seules les règles en vigueur à la date demandée (dateEffet) sont appliquées.',
+    'Seules les règles en vigueur à la date demandée (dateEffet) et déjà définies à cette date (definieLe) sont appliquées.',
+    'Les règles par défaut sont considérées comme définies le 01/01/2026 (config/regles-qualite-par-defaut.json).',
+  ],
+});
+
+// Case 7: bitemporality of data and rules. Time moves to 05/10: a late entry arrives and a retroactive rule is defined.
+clock.set('2026-10-05T09:00:00');
+const lateEntry = await fixture('dxcare-c_quest-saisie-tardive');
+reports.push({ name: 'dxcare-c_quest-saisie-tardive (cas 7, intégrée le 05/10)', report: await post('/integrer-donnees', lateEntry) });
+const retroactiveRule = {
+  identifiant: 'OMS-RECENT-RCP',
+  attribut: 'statutOms',
+  dimension: 'fraicheur',
+  typeControle: 'anciennete-max-jours',
+  parametres: { jours: 7 },
+  severite: 'avertissement',
+  usages: ['rcp'],
+  description: 'Pour une RCP, le statut OMS doit dater de moins de 7 jours',
+  auteur: 'data-steward-oncologie',
+  dateEffet: '2026-09-01',
+};
+const retroactiveRuleSaved = await post('/regles-qualite', retroactiveRule);
+const view = (dossier) => ({
+  aLaDate: dossier.aLaDate,
+  connuLe: dossier.connuLe,
+  valeur: dossier.patient.statutOms.valeur,
+  dateValeur: dossier.patient.statutOms.dateValeur,
+  sources: dossier.patient.statutOms.sources.map((source) => `${source.provenance.source} ${source.provenance.identifiantEnregistrement}, saisi le ${source.dateEnregistrement}`),
+  aptitude: dossier.patient.statutOms.qualite.aptitude,
+  reglesAppliquees: dossier.patient.statutOms.qualite.controles.map((controle) => `${controle.identifiantRegle} v${controle.versionRegle} : ${controle.resultat}`),
+});
+const shownAtRcp = await extract('2026-09-20');
+const knownToday = await get(`/extraire-donnees?identifiantPatient=${PATIENT}&aLaDate=2026-09-20&connuLe=2026-10-05T09:00:00`);
+cases.push({
+  title: 'Cas 7 – Bitemporalité : ce que le MDM montrait à la RCP, et ce que l’on sait aujourd’hui',
+  summary: 'Une saisie tardive et une règle rétroactive ne réécrivent pas ce que le MDM a fourni à la RCP du 20/09.',
+  shows: "Le 20/09, la RCP consulte le MDM : <b>OMS 1</b> (consultation du 12/09), apte à la RCP. Le 02/10, un OMS 2 de la consultation du 18/09 est saisi en retard ; le 05/10, un data steward crée une règle « OMS de moins de 7 jours pour une RCP », en vigueur depuis le 01/09. Deux questions, deux réponses : <b>que montrait le MDM le 20/09 ?</b> (<code>aLaDate=2026-09-20</code>) → OMS 1, sans la nouvelle règle ; <b>que sait-on aujourd'hui du 20/09 ?</b> (<code>&amp;connuLe=2026-10-05T09:00:00</code>) → OMS 2 au 18/09, nouvelle règle appliquée.",
+  inputs: [{ 'POST /integrer-donnees (05/10)': lateEntry }, { 'POST /regles-qualite (05/10)': retroactiveRule }],
+  outputs: [
+    { label: 'Règle enregistrée : en vigueur au 01/09, définie le 05/10', json: { identifiant: retroactiveRuleSaved.identifiant, version: retroactiveRuleSaved.version, dateEffet: retroactiveRuleSaved.dateEffet, definieLe: retroactiveRuleSaved.definieLe } },
+    { label: 'Ce que le MDM montrait à la RCP – aLaDate=2026-09-20', json: view(shownAtRcp) },
+    { label: 'Ce que l’on sait aujourd’hui du 20/09 – connuLe=2026-10-05T09:00:00', json: view(knownToday) },
+  ],
+  assumptions: [
+    'Deux axes de temps, pour les données comme pour les règles : la validité (dateValeur, dateEffet) répond à « à quelle date ? », la connaissance (dateEnregistrement, definieLe) à « su quand ? ».',
+    '« aLaDate » fixe la validité ; « connuLe » fixe la connaissance et vaut aLaDate par défaut : sans connuLe, le MDM rejoue exactement ce qu’il fournissait à cette date.',
+    'Une règle définie après « connuLe » est ignorée, même si sa date d’effet est antérieure : sinon l’OMS du 12/09 (8 jours au 20/09) apparaîtrait a posteriori comme non apte, alors que la RCP l’a vu apte.',
+    'Rien n’est réécrit : la saisie tardive est une nouvelle valeur sourcée, la règle une nouvelle donnée ; les deux réponses restent disponibles indéfiniment.',
   ],
 });
 
@@ -235,7 +283,7 @@ const architectureSection = `
     <rect x="808" y="300" width="118" height="70" rx="8" fill="#fff" stroke="#24507f" stroke-width="1.5"/>
     <text x="867" y="325" font-size="12.5" font-weight="700" fill="#0b3d6e">extraireDonnees</text>
     <text x="867" y="343" font-size="11" fill="#5b6475">(identifiantPatient,</text>
-    <text x="867" y="359" font-size="11" fill="#5b6475">aLaDate) → dossier</text>
+    <text x="867" y="359" font-size="11" fill="#5b6475">aLaDate, connuLe)</text>
     <text x="586" y="505" text-anchor="end" font-size="11.5" fill="#24507f">+ definirRegleQualite (règles à chaud)</text>
   </g>
 
@@ -293,7 +341,7 @@ const architectureSection = `
   <tr><td><b>Domaine</b></td><td>11 fichiers, environ 850 lignes. Fonctions pures et objets immuables : modélisation de la donnée enrichie, lignage des sources, fiabilité, règles qualité versionnées, consolidation, dossier patient. Langage du domaine en français.</td></tr>
   <tr><td><b>Scénarios</b></td><td><code>integrerDonnees</code>, <code>extraireDonnees</code> et <code>definirRegleQualite</code> (environ 80 lignes). Ils reçoivent leurs dépendances en paramètre (<b>injection de dépendances</b>) et n'importent que le domaine.</td></tr>
   <tr><td><b>Infrastructure</b></td><td>Entièrement <b>simulée</b> : base documentaire en mémoire au fonctionnement proche de MongoDB (documents sérialisés en JSON), dépôts documentaires, horloge système et horloge fixe, et une <b>gateway HTTP</b> limitée à la traduction requête web → appel de scénario. Une seule gateway (<code>http-gateway.js</code>) porte l'entrée et la sortie.</td></tr>
-  <tr><td><b>API</b></td><td>REST / JSON : <code>POST /integrer-donnees</code>, <code>GET /extraire-donnees?identifiantPatient=&amp;aLaDate=</code>, <code>POST /regles-qualite</code>, <code>GET /health</code>. Les erreurs du domaine deviennent des erreurs HTTP 400 ou 404.</td></tr>
+  <tr><td><b>API</b></td><td>REST / JSON : <code>POST /integrer-donnees</code>, <code>GET /extraire-donnees?identifiantPatient=&amp;aLaDate=&amp;connuLe=</code>, <code>POST /regles-qualite</code>, <code>GET /health</code>. Les erreurs du domaine deviennent des erreurs HTTP 400 ou 404.</td></tr>
   <tr><td><b>Composition</b></td><td><code>src/application.js</code> relie l'infrastructure aux scénarios (« composition root ») et charge les règles qualité par défaut depuis <code>config/regles-qualite-par-defaut.json</code>. <code>src/main.js</code> démarre la gateway.</td></tr>
   <tr><td><b>Tests</b></td><td>30 tests (<code>npm test</code>) : domaine, scénarios avec des doublures (faux dépôts, fausse horloge), infrastructure simulée, gateway avec de faux scénarios, et un test d'architecture qui vérifie la règle de dépendance.</td></tr>
   <tr><td><b>Démonstration</b></td><td>Cette page est générée par <code>npm run demo</code> : le script démarre la vraie gateway sur l'infrastructure simulée et rejoue les cas par des appels HTTP.</td></tr>

@@ -15,9 +15,15 @@ export const POLITIQUE_CONFIANCE = Object.freeze({
 /**
  * Consolidates all the values stated by the sources for one attribute of one patient.
  *
+ * Two time axes:
+ *  - `aLaDate` (valid time): the date the question is about; values with a later value date are ignored,
+ *    rules apply if their effect date is reached, freshness is measured at this date;
+ *  - `connuLe` (transaction time, default `aLaDate`): what was known; only values recorded and rules
+ *    defined at that moment are used. `connuLe` = `aLaDate` replays what the MDM delivered at that date.
+ *
  * Steps:
- *  1. keep the values known at `aLaDate` (recording date <= aLaDate);
- *  2. run the quality rules in force at `aLaDate`; values failing a blocking rule are rejected;
+ *  1. keep the values known at `connuLe` (recording date <= connuLe) and true at `aLaDate`;
+ *  2. run the quality rules in force at `aLaDate` and known at `connuLe`; values failing a blocking rule are rejected;
  *  3. group the remaining values by value date: the latest date is the current state,
  *     older dates are the history (an evolution, not a conflict);
  *  4. inside a value date, identical values are concordant, different values are a conflict.
@@ -27,15 +33,21 @@ export const POLITIQUE_CONFIANCE = Object.freeze({
  * @param {ReadonlyArray<import('./valeur-sourcee.js').ValeurSourcee>} entree.valeurs
  * @param {ReadonlyArray<import('./regles-qualite.js').RegleQualite>} entree.regles
  * @param {string} entree.aLaDate - date or date-time
+ * @param {string} [entree.connuLe] - date or date-time, default `aLaDate`
  */
-export function consoliderAttribut({ attribut, valeurs, regles, aLaDate }) {
+export function consoliderAttribut({ attribut, valeurs, regles, aLaDate, connuLe }) {
   const definition = obtenirAttribut(attribut);
-  const instant = endOfDayInstant(aLaDate);
-  const dateReference = datePart(instant);
-  const reglesApplicables = selectionnerReglesApplicables(regles, { attribut, date: dateReference });
+  const dateReference = datePart(endOfDayInstant(aLaDate));
+  const instantConnaissance = endOfDayInstant(connuLe ?? aLaDate);
+  const reglesApplicables = selectionnerReglesApplicables(regles, { attribut, date: dateReference, connuLe: instantConnaissance });
 
   const evaluees = valeurs
-    .filter((valeur) => valeur.attribut === attribut && valeur.dateEnregistrement <= instant)
+    .filter(
+      (valeur) =>
+        valeur.attribut === attribut &&
+        valeur.dateEnregistrement <= instantConnaissance &&
+        (valeur.dateValeur === null || valeur.dateValeur <= dateReference),
+    )
     .map((valeur) => evaluer(valeur, reglesApplicables, dateReference));
 
   const rejetees = evaluees.filter(estRejetee);

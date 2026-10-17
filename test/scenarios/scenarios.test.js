@@ -56,4 +56,15 @@ test('extraireDonnees refuse un patient inconnu et une date invalide', async () 
   const dependances = preparer();
   await assert.rejects(extraireDonnees({ identifiantPatient: 'PERSONNE' }, dependances), (erreur) => erreur instanceof ErreurDomaine && erreur.code === 'PATIENT_INCONNU');
   await assert.rejects(extraireDonnees({ identifiantPatient: 'P1', aLaDate: '01/08/2026' }, dependances), (erreur) => erreur.code === 'REQUETE_INVALIDE');
+  await integrerDonnees(extraction, dependances);
+  await assert.rejects(extraireDonnees({ identifiantPatient: 'P1', connuLe: 'hier' }, dependances), (erreur) => erreur.code === 'REQUETE_INVALIDE');
+});
+
+test('extraireDonnees : connuLe vaut aLaDate par défaut et peut être fourni', async () => {
+  const dependances = preparer();
+  await integrerDonnees(extraction, dependances);
+  const parDefaut = await extraireDonnees({ identifiantPatient: 'P1', aLaDate: '2026-09-20' }, dependances);
+  const fourni = await extraireDonnees({ identifiantPatient: 'P1', aLaDate: '2026-09-20', connuLe: '2026-10-01T08:00:00' }, dependances);
+  assert.equal(parDefaut.connuLe, '2026-09-20');
+  assert.equal(fourni.connuLe, '2026-10-01T08:00:00');
 });
