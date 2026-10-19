@@ -6,6 +6,7 @@ Prototype du MDM (plateforme de données de référence) de l'IGR – objectif 1
 - **Modèle des données enrichies :** ouvrir [`docs/domain-model.html`](docs/domain-model.html).
 - **Objets du domaine (vue code) :** ouvrir [`docs/domain-objects.html`](docs/domain-objects.html).
 - **Questions au métier :** ouvrir [`docs/questions-au-metier.html`](docs/questions-au-metier.html).
+- **Un MDM à l'IGR (cadrage) :** ouvrir [`docs/un-mdm-a-l-igr.html`](docs/un-mdm-a-l-igr.html).
 
 Toutes les données sont **fictives**.
 

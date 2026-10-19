@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Un MDM à l'IGR</title>
+<style>:root{--bleu:#0b3d6e;--bleu2:#24507f;--trait:#c9d3e0;--fond:#f2f5fa}
+body{margin:0;font:15px/1.55 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
+header{background:var(--bleu);color:#fff;padding:22px 32px} header h1{margin:0;font-size:24px}
+main{max-width:900px;margin:0 auto;padding:10px 24px 50px}
+h2{color:var(--bleu);border-bottom:2px solid var(--trait);padding-bottom:4px;margin-top:34px}
+h3{color:var(--bleu2);margin:22px 0 6px;font-size:16px}
+blockquote{margin:8px 0;background:var(--fond);border-left:4px solid var(--bleu2);padding:2px 14px;font-style:italic}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--trait);padding:6px 9px;text-align:left;vertical-align:top} th{background:#e8eef6;color:var(--bleu)}
+.encadre{margin:18px 0;padding:14px 18px;background:#fff6dd;border:2px solid #c98a1a;border-left-width:6px;border-radius:8px;font-size:15.5px}
+ul{margin:6px 0 0;padding-left:22px} li{margin:3px 0} a{color:var(--bleu2)}</style></head><body>
+<header><h1>Un MDM à l'IGR</h1></header>
+<main>
+<h2>Cadrage général</h2>
+<h3>Qu'est-ce qu'un MDM ?</h3>
+<p>Un MDM (<em>Master Data Management</em>, gestion des données de référence) rassemble les données clés de l'IGR (patient, pathologies, traitement, CR, événement (RCP), essai clinique), venues de plusieurs sources (DXCare, Simbad, comptes rendus…). Il en fait <strong>une version de confiance unique</strong> : pour chaque donnée, la valeur retenue, sa provenance, sa qualité et son historique. Il permet à tous les consommateurs (IVDP, recherche, BI, EDS, IA) d'utiliser les mêmes données, au lieu de réconcilier chacun les sources de son côté, et de rendre visibles les erreurs et les conflits entre sources.</p>
+<p>C'est un <strong>investissement de long terme, de 10 à 15 ans</strong> : les données et leur historique vivront plus longtemps que les outils, les sources (Simbad, puis DXCare) et les équipes. Cela implique un modèle documenté et évolutif, des standards et formats ouverts, la possibilité de sortir toutes les données (historique et règles compris) pour changer d'outil, et un accès simple et documenté pour les humains comme pour les IA.</p>
+<h3>Les grandes capacités d'un MDM</h3>
+<ul>
+<li><strong>Modélisation</strong> : le modèle métier des données de référence, lisible par le métier et évolutif ; plusieurs domaines dans un même MDM (patient, pathologies, traitement, CR, événement (RCP), essai clinique) et leurs relations. Les liens entre données (patient → pathologies → traitements) sont eux-mêmes des données sourcées, datées et consolidables.</li>
+<li><strong>Intégration des sources</strong> : chargement et synchronisation, correspondance des champs, fréquence d'alimentation.</li>
+<li><strong>Identité</strong> : rapprochement des patients entre sources, doublons, fusions et défusions.</li>
+<li><strong>Consolidation</strong> : choix de la valeur retenue entre les sources et place des décisions humaines. Le POC suit le style « consolidation » : les sources restent maîtres, le MDM construit la vue de référence.</li>
+<li><strong>Qualité des données</strong> : règles, contrôles, mesure et suivi de la qualité, aptitude par usage.</li>
+<li><strong>Historique et traçabilité</strong> : provenance et lignage de chaque valeur, audit ; un historique souvent immuable et bitemporel.</li>
+<li><strong>Gouvernance</strong> : chaque domaine a un responsable métier qui valide définitions, règles qualité, priorités entre sources et droits d'accès ; un comité data tranche les désaccords. La gouvernance décide, la gestion au quotidien applique.</li>
+<li><strong>Gestion au quotidien (stewardship)</strong> : revue des conflits et des valeurs à revoir, circuits de validation.</li>
+<li><strong>IA intégrée</strong> : aide de l'IA au rapprochement, à la qualité et à la revue (« MDM augmenté »).</li>
+<li><strong>Permissions et sécurité</strong> : droits d'accès, RGPD, pseudonymisation, hébergement HDS.</li>
+<li><strong>Diffusion</strong> : API, photos des données, sortie FHIR, notification des changements ; usages opérationnels (IVDP) et analytiques (BI, recherche).</li>
+<li><strong>Catalogue et documentation</strong> : dictionnaire des données, métadonnées, accès simple pour les IA.</li>
+<li><strong>Exploitation</strong> : performance, montée en charge, disponibilité, supervision, sauvegarde, sur 10 à 15 ans.</li>
+</ul>
+<p>Références recoupées : capacités évaluées par Gartner (Critical Capabilities for MDM Solutions, 2021 et 2026) et critères de Forrester (Wave MDM, T2 2025).</p>
+<div class="encadre"><b>Un projet d'ampleur.</b> Ces capacités montrent qu'un MDM est un gros projet, aux multiples facettes : technique (stockage, intégration, diffusion), métier (modèle, règles qualité, priorités entre sources), organisationnelle (gouvernance, gestion au quotidien) et réglementaire (RGPD, HDS, identitovigilance). Il s'inscrit dans la durée, sur 10 à 15 ans, et engage plusieurs équipes de l'IGR.</div>
+
+<h3>Coût d'un MDM du marché à l'IGR, de 1 à 15 ans</h3>
+<p><em>Ce sont des estimations IA.</em></p>
+<p>Compter <strong>0,6 à 1,8 M€ la première année</strong> et <strong>6 à 15 M€ sur 15 ans</strong>, selon l'éditeur et le périmètre. Repères vérifiés : Informatica MDM SaaS à partir d'environ 110 k€/an (offre groupée à partir d'environ 245 k€/an) ; Reltio environ 175 k€/an par unité ; Semarchy acheté environ 1 M€ pour un an par l'agence sanitaire britannique (UKHSA).</p>
+<table>
+<thead>
+<tr>
+<th>Durée</th>
+<th>1 an</th>
+<th>2 ans</th>
+<th>5 ans</th>
+<th>10 ans</th>
+<th>15 ans</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coût cumulé</td>
+<td>0,6 – 1,8 M€</td>
+<td>1,0 – 2,7 M€</td>
+<td>2,1 – 5,4 M€</td>
+<td>4,1 – 10 M€</td>
+<td>6,0 – 15 M€</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>La licence (100 à 400 k€/an) pèse 25 à 40 % du total.</strong> Le reste est la mise en œuvre (0,3 à 1 M€ la première année, soit 1,5 à 3 fois la licence) et l'équipe interne (2 à 3 personnes, ~100 k€ chacune).</li>
+<li><strong>Hébergement :</strong> les offres vérifiées (Informatica, Reltio) sont en ligne (SaaS) ; un hébergement sur site ou HDS est à confirmer avec chaque éditeur.</li>
+<li><strong>Sur 15 ans,</strong> il faut prévoir au moins une migration et exiger la réversibilité (pouvoir exporter les valeurs, l'historique, les règles qualité et les politiques de choix, le modèle, et utiliser des formats ouverts et documentés).</li>
+</ul>
+<p>Sources : <a href="https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/716640/333923789165319-service-definition-document-2025-08-05-1503.pdf">Informatica, grille G-Cloud 14</a>, <a href="https://aws.amazon.com/marketplace/pp/prodview-oegxc7drsk7yu">Reltio, AWS Marketplace</a>, <a href="https://www.contractsfinder.service.gov.uk/Notice/b0207bdc-c9dd-4ea8-8243-199bc3aaaaa1">UKHSA, Contracts Finder</a>, <a href="https://www.getmonetizely.com/articles/procurement-guide-how-master-data-management-mdm-platforms-are-priced-for-enterprises">Monetizely</a>, <a href="https://www.erpresearch.com/erp-add-ons/mdm/informatica-mdm/pricing">ERPResearch</a>, <a href="https://www.centricdxb.com/insights/mdm-implementation-cost-enterprise-budget-guide">Centric</a>.</p>
+<h3>Un MDM fait en interne</h3>
+<p><strong>L'IA change la donne.</strong> Les assistants de programmation réduisent fortement le coût d'un logiciel spécifique : le prototype a été écrit en quelques heures avec Claude Code.</p>
+<p>Construire le MDM sur des briques ouvertes (base de données, API, outils de qualité), en partant du prototype existant.</p>
+<p><strong>Un sujet d'envergure, construit pas à pas.</strong> Un MDM n'est pas un petit projet : six domaines, identité, qualité, historique, diffusion, exploitation, sur 10 à 15 ans. Il peut pourtant démarrer petit : un ou deux domaines (patient, pathologies) et quelques attributs pour un premier usage, puis grandir au rythme des besoins, en ajoutant domaines, sources et capacités. L'architecture le permet : un domaine indépendant de l'infrastructure, des règles stockées comme des données (et, à terme, les attributs), et un modèle documenté qui s'enrichit sans tout refaire.</p>
+<p><strong>Hypothèses :</strong> pas de licence ; une personne coûte environ 100 k€/an chargée (ingénieur data senior en Île-de-France : 60 à 81 k€ brut, charges patronales comprises) ; 1 développeur (+ IA) et 1 personne pour la gestion des données, sur toute la durée ; infrastructure (HDS ou sur site) de 20 à 50 k€/an ; une refonte technique tous les 7 ans environ (150 à 200 k€).</p>
+<table>
+<thead>
+<tr>
+<th>Durée</th>
+<th>Bas</th>
+<th>Haut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 an</td>
+<td>~0,23 M€</td>
+<td>~0,26 M€</td>
+</tr>
+<tr>
+<td>2 ans</td>
+<td>~0,45 M€</td>
+<td>~0,5 M€</td>
+</tr>
+<tr>
+<td>5 ans</td>
+<td>~1,1 M€</td>
+<td>~1,3 M€</td>
+</tr>
+<tr>
+<td>10 ans</td>
+<td>~2,4 M€</td>
+<td>~2,8 M€</td>
+</tr>
+<tr>
+<td>15 ans</td>
+<td>~3,7 M€</td>
+<td>~4,2 M€</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Coût total de 1,5 à 3,5 fois inférieur au marché sur 15 ans</strong> (3,7 à 4,2 M€ contre 6 à 15 M€) : sans licence ni intégrateur, l'équipe reste le premier poste.</li>
+<li><strong>Pour :</strong> modèle et règles maîtrisés, adaptés aux besoins propres de l'IGR (bitemporalité, provenance par valeur, règles dynamiques) ; pas de dépendance à un éditeur ; données en formats ouverts.</li>
+<li><strong>Contre :</strong> forte dépendance à une seule personne pour le développement (départ, absence, transmission) ; délai plus long avant les fonctions avancées (rapprochement d'identités, écrans de revue) ; maintenance et sécurité à assumer.</li>
+</ul>
+<h2>Les besoins orientent la technologie</h2>
+<p>Les principes techniques ci-dessous sont des choix possibles, souvent combinables. Ils sont engageants sur 10 à 15 ans : les réponses aux questions au métier diront lesquels retenir, et les outils en découleront.</p>
+<ul>
+<li><strong>Immutabilité</strong> : les données reçues ne sont jamais modifiées ni effacées ; une correction est un ajout.</li>
+<li><strong>Bitemporalité</strong> : chaque donnée, et éventuellement chaque règle, porte deux dates, quand elle était vraie et quand on l'a sue ; on peut rejouer le passé.</li>
+<li><strong>Journal d'événements et vues dérivées</strong> : les faits sont stockés dans un journal, les vues consolidées en sont calculées et reconstructibles (<em>event sourcing</em>, CQRS).</li>
+<li><strong>Photos des données</strong> : des vues consolidées stockées et datées, pour la lecture en masse (BI, recherche).</li>
+<li><strong>Règles comme des données</strong> : règles qualité et politiques de choix stockées, versionnées et modifiables sans redéploiement.</li>
+<li><strong>Type de stockage</strong> : relationnel (tables), documentaire (objets JSON), graphe (relations entre entités), bitemporel natif, ou en colonnes pour l'analytique.</li>
+<li><strong>Modèle propre et façade FHIR</strong> : un modèle métier indépendant des standards, avec une couche qui expose les données en FHIR.</li>
+<li><strong>Intégration par lots ou en flux</strong> : chargements planifiés, ou capture des changements dans les sources au fil de l'eau.</li>
+<li><strong>Modèle de droits</strong> : par rôle (RBAC), par attributs (ABAC), par relations (ReBAC) ou par listes attachées aux données (ACL).</li>
+<li><strong>Pseudonymisation et minimisation</strong> : ne donner à chaque usage, humain ou IA, que les données nécessaires, identifiantes ou non.</li>
+<li><strong>Modèle décrit de façon déclarative</strong> : le modèle est écrit dans un langage standard, d'où sont générés documentation, catalogue et schémas.</li>
+<li><strong>Accès par API</strong> : API documentées (REST, GraphQL) et accès dédié aux IA (MCP).</li>
+<li><strong>Architecture indépendante de l'infrastructure</strong> : le cœur métier ne dépend d'aucun outil, ce qui permet d'en changer.</li>
+<li><strong>Formats ouverts et réversibilité</strong> : export complet des données, de l'historique et des règles dans des formats ouverts.</li>
+</ul>
+<h2>Questions au métier</h2>
+<p>Pour choisir parmi ces principes, 17 questions sont posées au métier : immutabilité, bitemporalité, photo des données, identité patient, choix entre les sources, fraîcheur, gestion au quotidien, accès des IA et droits d'accès. Chacune est illustrée d'un exemple et se répond le plus souvent par oui ou non ; chaque réponse indique ce qu'elle implique techniquement.</p>
+<p>👉 <a href="https://blaurant.github.io/poc-mdm/docs/questions-au-metier.html">Questions au métier, en ligne</a></p>
+</main></body></html>
