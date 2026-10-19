@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questions au métier</title>
+<style>:root{--bleu:#0b3d6e;--bleu2:#24507f;--trait:#c9d3e0;--fond:#f2f5fa}
+body{margin:0;font:15px/1.55 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
+header{background:var(--bleu);color:#fff;padding:22px 32px} header h1{margin:0;font-size:24px}
+main{max-width:900px;margin:0 auto;padding:10px 24px 50px}
+h2{color:var(--bleu);border-bottom:2px solid var(--trait);padding-bottom:4px;margin-top:34px}
+h3{color:var(--bleu2);margin:22px 0 6px;font-size:16px}
+blockquote{margin:8px 0;background:var(--fond);border-left:4px solid var(--bleu2);padding:2px 14px;font-style:italic}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--trait);padding:6px 9px;text-align:left;vertical-align:top} th{background:#e8eef6;color:var(--bleu)}
+.encadre{margin:18px 0;padding:14px 18px;background:#fff6dd;border:2px solid #c98a1a;border-left-width:6px;border-radius:8px;font-size:15.5px}
+ul{margin:6px 0 0;padding-left:22px} li{margin:3px 0} a{color:var(--bleu2)}</style></head><body>
+<header><h1>Questions au métier</h1></header>
+<main>
+<h2>Immutabilité des données sources</h2>
+<h3>Question 1 – Corrections dans les sources</h3>
+<blockquote>
+<p>« Quand une source corrige une valeur (par exemple un poids saisi 68 kg puis corrigé en 78 kg), devez-vous <strong>retrouver l'ancienne valeur</strong>, savoir qui l'a corrigée et quand ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : conserver toutes les valeurs reçues, sans jamais les écraser.</li>
+<li><strong>Non</strong> : la dernière valeur de chaque source suffit (mise à jour en place).</li>
+</ul>
+<h3>Question 2 – Changement de règles</h3>
+<blockquote>
+<p>« Quand une règle de qualité ou de choix entre sources change, faut-il qu'elle <strong>s'applique aussi à l'historique</strong>, sans redemander les données aux sources ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : conserver les valeurs brutes et recalculer la donnée consolidée.</li>
+<li><strong>Non</strong> : une donnée consolidée calculée une fois, à l'intégration, suffit.</li>
+</ul>
+<h3>Question 3 – Contestation par le métier</h3>
+<blockquote>
+<p>« Un expert métier doit-il pouvoir <strong>contester la valeur retenue</strong> en voyant toutes les valeurs proposées par les sources, y compris celles écartées ou rejetées ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : conserver toutes les valeurs sources, pas seulement la valeur retenue.</li>
+<li><strong>Non</strong> : seule la valeur consolidée est conservée.</li>
+</ul>
+<h2>Bitemporalité</h2>
+<h3>Question 4 – Des données</h3>
+<blockquote>
+<p>« Avez-vous besoin de savoir, pour une date passée, <strong>quelles valeurs étaient connues à ce moment-là</strong>, en distinguant la date à laquelle le fait clinique était vrai de la date à laquelle il a été saisi ? Par exemple, un poids de 62 kg mesuré à la consultation du 18/09 et saisi en retard le 02/10 : faut-il pouvoir dire qu'il n'était pas connu lors de la RCP du 20/09, qui s'est appuyée sur 68 kg ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : bitemporalité des données (date de valeur et date d'enregistrement).</li>
+<li><strong>Non, seulement l'historique des valeurs</strong> : le temps de validité suffit.</li>
+</ul>
+<h3>Question 5 – Des données et des règles</h3>
+<blockquote>
+<p>« Avez-vous besoin de retrouver, après coup, <strong>exactement ce que le MDM a affiché ou livré à une date donnée</strong> (valeurs et règles de qualité de l'époque), même si les données ou les règles ont été corrigées depuis ? Par exemple, la RCP du 20/09 s'est appuyée sur un poids de 68 kg, mesuré le 12/09 et jugé à jour. Le 05/10, une règle « pour une RCP, le poids doit dater de moins de 7 jours » est créée, applicable depuis le 01/09 : avec elle, ce poids de 8 jours serait jugé trop ancien. Faut-il pouvoir montrer que, le 20/09, le MDM affichait 68 kg comme valable pour la RCP, afin de justifier la décision prise ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : bitemporalité complète, pour les données et pour les règles.</li>
+<li><strong>Non, seulement l'historique des valeurs</strong> : le temps de validité suffit.</li>
+</ul>
+<p>Illustration : cas 7 de la démonstration, https://blaurant.github.io/poc-mdm/demo/#cas-7</p>
+<h2>Photo des données</h2>
+<h3>Question 6 – Extraction de tous les patients</h3>
+<blockquote>
+<p>« Avez-vous besoin d'<strong>interroger ou d'extraire les données de tous les patients à la fois</strong> (BI, alimentation de la recherche ou de l'EDS, sélection de cohortes), et <strong>à quelle fréquence</strong> ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : une photo consolidée, datée et recalculable, mise à jour à la fréquence indiquée (par exemple chaque nuit).</li>
+<li><strong>Non, seulement patient par patient</strong> : le calcul à la lecture suffit, sans photo.</li>
+</ul>
+<h3>Question 7 – Photo à une date passée</h3>
+<blockquote>
+<p>« Avez-vous besoin de <strong>produire après coup une photo des données à une date passée</strong> ? Par exemple l'état des données au 31/12/2025 pour un rapport annuel, ou pour reproduire une étude dont la photo d'origine n'a pas été conservée. »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : photos régénérables à la demande, à partir des données immuables et de la bitemporalité des données et des règles ; l'algorithme de consolidation doit aussi être versionné.</li>
+<li><strong>Non</strong> : seule la photo courante, mise à jour périodiquement, est nécessaire.</li>
+</ul>
+<h2>Identité patient</h2>
+<h3>Question 8 – Référentiel d'identités</h3>
+<blockquote>
+<p>« Existe-t-il déjà un <strong>référentiel d'identités</strong> (identitovigilance, correspondance Simbad → DXCare) que le MDM doit utiliser, et <strong>qui est habilité à valider ou défaire une fusion de patients</strong> ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui, un référentiel existe</strong> : le MDM le consomme au lieu de rapprocher lui-même les patients. Les fusions et défusions y sont reçues comme des faits datés, au même titre que les autres données : une fusion défaite après coup doit pouvoir être rejouée (« à quel patient cette valeur était-elle rattachée le 20/09 ? »). La personne ou la cellule habilitée devient l'auteur de ces faits.</li>
+<li><strong>Non</strong> : le MDM doit porter le rapprochement d'identités (INS, traits d'identité, détection des doublons) et un circuit de validation humaine des fusions. C'est un chantier à part entière, avec un enjeu de sécurité des soins.</li>
+</ul>
+<h2>Consolidation : choix entre les sources</h2>
+<h3>Question 9 – Décision humaine</h3>
+<blockquote>
+<p>« Quand un expert tranche un conflit, sa <strong>décision doit-elle primer sur les sources</strong>, y compris sur les valeurs qu'elles enverront plus tard ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : la décision de l'expert est enregistrée comme une valeur d'une source « décision métier », prioritaire, datée et signée ; elle n'est jamais perdue au recalcul. Il faut alors fixer ce qui se passe quand une source envoie ensuite une nouvelle valeur : la décision tient-elle, ou le conflit est-il rouvert ?</li>
+<li><strong>Non</strong> : le choix reste automatique ; la décision de l'expert n'est qu'un commentaire, et la règle de choix l'emporte au calcul suivant.</li>
+<li><strong>Dans les deux cas</strong> : la politique de choix (priorité des sources, départage, place des décisions humaines) suit le même schéma que les règles qualité. Elle est stockée, versionnée et bitemporelle, puis appliquée au moment du calcul : on peut la modifier sans redéploiement et rejouer le passé avec la politique de l'époque.</li>
+</ul>
+<h3>Question 10 – Priorité entre les sources (à creuser)</h3>
+<blockquote>
+<p>« Une donnée saisie dans un champ de DXCare doit-elle <strong>toujours l'emporter</strong> sur une donnée reprise de Simbad ou lue automatiquement dans un compte rendu (NLP), ou <strong>cela dépend-il de l'attribut</strong> ? »</p>
+</blockquote>
+<p>Par exemple, pour une date de naissance, Simbad a pu être vérifié pendant des années, alors qu'une saisie récente dans DXCare peut contenir une faute de frappe. Pour le poids, la valeur la plus récente et structurée a plus de chances d'être la bonne.</p>
+<ul>
+<li><strong>Toujours</strong> : un ordre de priorité unique entre les sources, simple à expliquer (c'est le fonctionnement actuel du prototype).</li>
+<li><strong>Selon l'attribut</strong> : une politique de choix par attribut (source préférée, ancienneté, vérification), définie par le métier et gérée comme les règles qualité (voir question 9).</li>
+</ul>
+<h2>Intégration des sources</h2>
+<h3>Question 11 – Fraîcheur</h3>
+<blockquote>
+<p>« Quel <strong>délai est acceptable</strong> entre une saisie dans une source et sa présence dans le MDM : temps réel, une heure, un jour ? »</p>
+</blockquote>
+<ul>
+<li><strong>Temps réel ou quelques minutes</strong> : intégration en continu, au fil des modifications des sources (flux d'événements, capture des changements). Plus d'exigences sur les sources et sur l'exploitation, mais IVDP affiche la donnée du jour.</li>
+<li><strong>Une heure à un jour</strong> : intégration par lots planifiés, plus simple et plus robuste. La donnée vue en RCP peut avoir jusqu'à ce délai de retard, ce qui doit être affiché à l'utilisateur.</li>
+</ul>
+<h2>Gestion des données au quotidien</h2>
+<h3>Question 12 – Experts, automatisation ou IA</h3>
+<blockquote>
+<p>« Des <strong>experts sont-ils prévus pour gérer effectivement les données</strong> (traiter les conflits, valider les valeurs à revoir), ou l'objectif est-il de <strong>tout automatiser</strong>, voire de confier cette gestion à une <strong>IA</strong> ? »</p>
+</blockquote>
+<ul>
+<li><strong>Des experts</strong> : il faut un écran de revue, une file des conflits et des valeurs à revoir, et des décisions tracées (question 9). Il faut aussi prévoir leur temps : chaque conflit non traité reste signalé.</li>
+<li><strong>Tout automatisé</strong> : la politique de choix doit couvrir tous les cas sans intervention humaine ; les conflits restent visibles mais ne sont jamais tranchés à la main. Le risque d'erreur résiduelle est accepté.</li>
+<li><strong>Une IA</strong> : l'IA propose ou tranche, et sa décision est tracée comme celle d'une source « IA », avec sa confiance. Il faut décider si un humain valide ses propositions, et pour quels attributs.</li>
+</ul>
+<h2>Accès aux données</h2>
+<h3>Question 13 – Accès des IA</h3>
+<blockquote>
+<p>« Les IA peuvent-elles accéder aux <strong>données identifiantes</strong>, ou seulement à des <strong>données pseudonymisées</strong> ? »</p>
+</blockquote>
+<ul>
+<li><strong>Identifiantes</strong> : contrôle d'accès strict et traçabilité de chaque accès, dans un environnement HDS ; à valider avec le DPO.</li>
+<li><strong>Pseudonymisées seulement</strong> : une couche de pseudonymisation entre le MDM et les IA (voir le backlog anonymisation), y compris pour les photos des données.</li>
+</ul>
+<h2>Droits d'accès</h2>
+<p>Ces quatre questions déterminent le modèle de droits : par rôle (RBAC, <em>Role-Based Access Control</em>), par attributs (ABAC, <em>Attribute-Based Access Control</em>), par relations (ReBAC, <em>Relationship-Based Access Control</em>) ou par liste attachée à la ressource (ACL, <em>Access Control List</em>). Les réponses se combinent.</p>
+<h3>Question 14 – Fonction</h3>
+<blockquote>
+<p>« Les droits d'une personne dépendent-ils <strong>uniquement de sa fonction</strong> (data steward, analyste BI, concepteur d'interface, administrateur), quel que soit le patient ou l'usage ? »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : des rôles suffisent (RBAC). Chaque fonction reçoit un ensemble de permissions, chaque personne un ou plusieurs rôles ; simple à administrer et à auditer.</li>
+<li><strong>Non</strong> : les rôles restent la base, mais il faut les compléter selon les questions suivantes.</li>
+</ul>
+<h3>Question 15 – Usage et nature de la donnée</h3>
+<blockquote>
+<p>« L'accès doit-il dépendre de <strong>l'usage</strong> (soin, recherche, BI) ou de <strong>la donnée elle-même</strong> ? Par exemple : exclure un patient qui s'est opposé à la recherche, ne donner que des données pseudonymisées aux IA, restreindre les données génétiques. »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : des règles fondées sur les attributs de la personne, de la donnée et de l'usage (ABAC). Elles sont stockées et versionnées comme les règles qualité, et appliquées à chaque accès.</li>
+<li><strong>Non</strong> : les rôles suffisent pour cet aspect.</li>
+</ul>
+<h3>Question 16 – Lien avec le patient</h3>
+<blockquote>
+<p>« L'accès doit-il dépendre du <strong>lien entre la personne et le patient</strong> ? Par exemple : seulement les patients de son équipe de soins, de sa RCP ou de l'essai dont on est investigateur. »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : des droits calculés à partir des relations (ReBAC). Le MDM doit connaître ces liens (équipes, RCP, investigateurs), à jour et datés.</li>
+<li><strong>Non</strong> : pas besoin de modéliser ces relations pour les droits.</li>
+</ul>
+<h3>Question 17 – Exceptions nominatives</h3>
+<blockquote>
+<p>« Faut-il pouvoir accorder <strong>ponctuellement</strong> à une personne nommée l'accès à un jeu de données ou à un patient précis ? Par exemple : un chercheur sur une cohorte donnée, pour la durée d'une étude. »</p>
+</blockquote>
+<ul>
+<li><strong>Oui</strong> : quelques droits posés directement sur la ressource (ACL), avec une date de fin et une trace de qui les a accordés.</li>
+<li><strong>Non</strong> : tous les accès passent par les rôles et les règles.</li>
+</ul>
+<p><strong>Lecture des réponses pour le permissionning :</strong></p>
+<table>
+<thead>
+<tr>
+<th>Réponses « oui »</th>
+<th>Modèle de droits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q14 seulement</td>
+<td>Rôles (RBAC)</td>
+</tr>
+<tr>
+<td>Q14 + Q15</td>
+<td>Rôles et règles par attributs (RBAC + ABAC)</td>
+</tr>
+<tr>
+<td>Q14 + Q16</td>
+<td>Rôles et relations (RBAC + ReBAC)</td>
+</tr>
+<tr>
+<td>Q17 en plus</td>
+<td>Quelques ACL pour les exceptions</td>
+</tr>
+</tbody>
+</table>
+</main></body></html>
