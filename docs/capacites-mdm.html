@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capacités du MDM</title>
+<style>
+:root{--bleu:#0b3d6e;--bleu2:#24507f;--trait:#c9d3e0;--fond:#f2f5fa;--vert:#2e8b57;--rouge:#b0462a;--gris:#5b6475}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
+header{background:var(--bleu);color:#fff;padding:22px 32px}
+header h1{margin:0 0 6px;font-size:24px}
+header p{margin:0;opacity:.9}
+header a{color:#cfe0f5}
+main{max-width:980px;margin:0 auto;padding:12px 16px 60px}
+h2{color:var(--bleu);border-bottom:2px solid var(--trait);padding-bottom:4px;margin-top:30px;font-size:19px}
+.note{background:var(--fond);border-left:4px solid var(--bleu2);padding:8px 12px;margin:14px 0}
+.cap{display:grid;grid-template-columns:1fr auto;gap:6px 18px;padding:10px 0;border-bottom:1px solid #e3e8ef}
+.cap h3{margin:0;font-size:15.5px}
+.cap h3 .id{color:var(--gris);font-weight:600;margin-right:6px}
+.cap .desc{margin:2px 0 0;color:#2b3445}
+.cap .impl{margin:3px 0 0;font-size:13.5px;color:var(--gris)}
+.cap .q{font-size:12.5px;color:var(--bleu2);font-weight:600}
+.choix{display:flex;gap:4px;align-self:start}
+.choix label{border:1px solid var(--trait);border-radius:6px;padding:4px 9px;font-size:13.5px;cursor:pointer;white-space:nowrap;user-select:none}
+.choix input{position:absolute;opacity:0;pointer-events:none}
+.choix input:focus-visible+span{outline:2px solid var(--bleu2);outline-offset:3px}
+.choix label.on.oui{background:#e3f4ea;border-color:var(--vert);color:#1f6a40;font-weight:600}
+.choix label.on.non{background:#fbe4dc;border-color:var(--rouge);color:#7a3a28;font-weight:600}
+.choix label.on.nsp{background:#eceef2;border-color:#9aa3b2;font-weight:600}
+.com{grid-column:1/-1}
+.com input{width:100%;font:inherit;font-size:13.5px;padding:4px 8px;border:1px solid #e3e8ef;border-radius:5px;color:#1d2433}
+.com input::placeholder{color:#9aa3b2}
+.excl{font-size:12.5px;color:#b35c00;margin-top:3px}
+@media (max-width:640px){.cap{grid-template-columns:1fr}.choix{flex-wrap:wrap}}
+@media print{.com input{border:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Capacités du MDM</h1>
+  <p>Ce que le MDM pourrait savoir faire, tiré des <a href="questions-au-metier.html">questions au métier</a>. Cochez pour chaque capacité : je veux, je ne veux pas, ou je ne sais pas.</p>
+</header>
+<main>
+
+<div id="liste"></div>
+
+</main>
+
+<script>
+const SECTIONS = [
+  { titre: 'Immutabilité des données sources', items: [
+    { id: 'C1', cap: 'Garder toutes les valeurs reçues, même corrigées', desc: "Une valeur corrigée par la source (poids saisi 68 kg puis corrigé en 78 kg) ne remplace jamais l'ancienne.", impl: "Stockage de tout l'historique des sources.", q: 'Q1' },
+    { id: 'C2', cap: 'Savoir qui a corrigé une valeur, et quand', desc: "Pour chaque correction : l'auteur dans la source, la date de saisie, la date d'arrivée dans le MDM.", impl: "Les sources doivent transmettre l'auteur et la date de saisie.", q: 'Q1' },
+    { id: 'C3', cap: "Appliquer une nouvelle règle à tout l'historique", desc: "Quand une règle de qualité ou de choix change, la donnée consolidée du passé est recalculée, sans redemander les données aux sources.", impl: 'Garder les valeurs brutes ; consolidation calculée à la lecture.', q: 'Q2' },
+    { id: 'C4', cap: 'Voir toutes les valeurs proposées par les sources', desc: 'Un expert voit, à côté de la valeur retenue, les valeurs écartées ou rejetées, avec leur source et la raison.', impl: 'Toutes les valeurs sont conservées, même illisibles.', q: 'Q3' },
+  ]},
+  { titre: 'Bitemporalité', items: [
+    { id: 'C5', cap: "Retrouver la valeur d'une donnée à une date passée", desc: 'Quel était le poids du patient au 20/09 ?', impl: 'Historique des valeurs (date de valeur).', q: 'Q4' },
+    { id: 'C6', cap: "Savoir ce qui était connu à une date passée", desc: "Distinguer la date du fait clinique de la date de saisie : un poids mesuré le 18/09 et saisi le 02/10 n'était pas connu à la RCP du 20/09.", impl: "Deux dates par valeur : date de valeur et date d'enregistrement.", q: 'Q4' },
+    { id: 'C7', cap: 'Reproduire exactement ce que le MDM affichait à une date', desc: 'Valeurs et règles de l\'époque, pour justifier une décision après coup (ex. la RCP du 20/09).', impl: 'Bitemporalité des données et des règles.', q: 'Q5' },
+    { id: 'C8', cap: 'Créer une règle rétroactive sans réécrire le passé', desc: "Une règle créée le 05/10 avec effet au 01/09 s'applique aux données de septembre, sans effacer ce que le MDM affichait avant le 05/10.", impl: "Deux dates par règle : date d'effet et date de définition.", q: 'Q5' },
+  ]},
+  { titre: 'Photo des données', items: [
+    { id: 'C9', cap: 'Extraire tous les patients à la fois', desc: 'Pour la BI, la recherche, l\'EDS ou la sélection de cohortes, avec une photo consolidée mise à jour régulièrement.', impl: 'Calcul périodique (ex. chaque nuit) et stockage de la photo.', q: 'Q6' },
+    { id: 'C10', cap: 'Produire après coup une photo à une date passée', desc: "L'état des données au 31/12/2025 pour un rapport annuel, ou pour reproduire une étude.", impl: "Algorithme de consolidation versionné ; photos régénérables.", q: 'Q7' },
+  ]},
+  { titre: 'Identité patient', items: [
+    { id: 'C11', cap: 'Rapprocher les identités patient', desc: 'Relier NIP, numéro Simbad et INS d\'un même patient, détecter les doublons.', impl: "Chantier à part entière, enjeu de sécurité des soins. Inutile si un référentiel d'identités existe déjà.", q: 'Q8' },
+    { id: 'C12', cap: 'Fusionner et défusionner des patients, avec validation humaine', desc: 'Une fusion défaite après coup se rejoue : à quel patient cette valeur était-elle rattachée le 20/09 ?', impl: 'Liens d\'identité datés ; circuit de validation (identitovigilance).', q: 'Q8' },
+  ]},
+  { titre: 'Consolidation : choix entre les sources', items: [
+    { id: 'C13', cap: 'Choisir la valeur selon un ordre unique des sources', desc: 'Par exemple DXCare avant Simbad avant le NLP, pour toutes les données.', impl: 'Simple à expliquer.', q: 'Q10', groupe: 'choix' },
+    { id: 'C14', cap: 'Choisir la valeur selon une politique par donnée', desc: 'Pour la date de naissance, Simbad vérifié depuis des années ; pour le poids, la valeur la plus récente.', impl: 'Politique définie par le métier, datée comme les règles.', q: 'Q10', groupe: 'choix' },
+    { id: 'C15', cap: "Faire primer la décision d'un expert sur les sources", desc: "Quand un expert tranche un conflit, sa décision l'emporte, y compris sur les valeurs envoyées plus tard.", impl: 'Décision datée et signée ; règle pour les nouvelles valeurs (la décision tient ou le conflit est rouvert).', q: 'Q9' },
+    { id: 'C16', cap: 'Modifier règles et politique de choix sans redéploiement', desc: 'Le métier change un seuil ou la priorité des sources ; le passé reste rejouable avec les règles de l\'époque.', impl: 'Règles et politiques stockées comme des données.', q: 'Q9' },
+  ]},
+  { titre: 'Intégration des sources', items: [
+    { id: 'C17', cap: 'Recevoir les données en temps réel (quelques minutes)', desc: 'IVDP affiche la donnée saisie dans la journée.', impl: 'Flux depuis les sources ; plus exigeant à exploiter.', q: 'Q11' },
+    { id: 'C18', cap: 'Recevoir les données par lots (une heure à un jour)', desc: 'Intégration planifiée, par exemple chaque nuit.', impl: 'Plus simple et plus robuste.', q: 'Q11' },
+    { id: 'C19', cap: "Afficher le retard de la donnée à l'utilisateur", desc: '« Données à jour au 13/09 02:00 » sur l\'écran de RCP.', impl: "Date de réception gardée pour chaque valeur.", q: 'Q11' },
+  ]},
+  { titre: 'Gestion des données au quotidien', items: [
+    { id: 'C20', cap: 'Faire traiter les conflits par des experts', desc: 'Un écran de revue et une file des conflits et des valeurs à revoir.', impl: 'Écrans à construire ; du temps d\'experts à prévoir.', q: 'Q12' },
+    { id: 'C21', cap: 'Tout résoudre automatiquement', desc: 'Les conflits restent visibles mais ne sont jamais tranchés à la main.', impl: "Risque d'erreur résiduelle accepté.", q: 'Q12' },
+    { id: 'C22', cap: 'Faire proposer ou trancher les conflits par une IA', desc: "La décision de l'IA est tracée avec sa confiance, validée ou non par un humain selon la donnée.", impl: 'Décider pour quelles données un humain valide.', q: 'Q12' },
+  ]},
+  { titre: 'Accès aux données', items: [
+    { id: 'C23', cap: 'Donner aux IA un accès aux données identifiantes', desc: 'Les IA lisent les données avec le nom et le NIP du patient.', impl: 'Contrôle et traçabilité de chaque accès ; validation du DPO.', q: 'Q13', groupe: 'ia' },
+    { id: 'C24', cap: 'Donner aux IA un accès aux données pseudonymisées seulement', desc: 'Les IA ne voient jamais l\'identité du patient, y compris dans les photos.', impl: 'Couche de pseudonymisation entre le MDM et les IA.', q: 'Q13', groupe: 'ia' },
+  ]},
+  { titre: "Droits d'accès", items: [
+    { id: 'C25', cap: 'Droits selon la fonction', desc: 'Data steward, analyste BI, concepteur d\'interface, administrateur.', impl: 'Rôles (RBAC).', q: 'Q14' },
+    { id: 'C26', cap: "Droits selon l'usage et la nature de la donnée", desc: "Exclure un patient opposé à la recherche, restreindre les données génétiques.", impl: 'Règles par attributs (ABAC), datées comme les règles qualité.', q: 'Q15' },
+    { id: 'C27', cap: 'Droits selon le lien avec le patient', desc: "Seulement les patients de son équipe, de sa RCP ou de son essai.", impl: 'Relations à jour et datées (ReBAC).', q: 'Q16' },
+    { id: 'C28', cap: 'Droits nominatifs et temporaires', desc: "Un chercheur sur une cohorte donnée, pour la durée d'une étude.", impl: 'Listes d\'accès avec date de fin (ACL).', q: 'Q17' },
+  ]},
+  { titre: 'Évolution du modèle', items: [
+    { id: 'C29', cap: 'Faire évoluer la structure en gardant l\'historique', desc: "La décision de RCP, simple information du patient, devient une séance puis un passage en RCP ; l'historique est repris dans la nouvelle structure.", impl: 'Reprise datée et marquée ; champs vides quand l\'information manquait.', q: 'Q18' },
+    { id: 'C30', cap: 'Interroger le passé dans la structure de l\'époque', desc: "Montrer ce que le MDM affichait avant le changement de structure, tel qu'il l'affichait.", impl: 'Modèle lui-même daté et versionné ; traduction ancienne → nouvelle structure.', q: 'Q18' },
+  ]},
+];
+
+const CHOIX = [['oui', 'Je veux'], ['non', 'Je ne veux pas'], ['nsp', 'Je ne sais pas']];
+const CLE = 'capacites-mdm-v1';
+let etat = { rep: {}, com: {} };
+try { const s = localStorage.getItem(CLE); if (s) etat = Object.assign(etat, JSON.parse(s)); } catch (e) {}
+const sauver = () => { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {} };
+
+const liste = document.getElementById('liste');
+const tous = SECTIONS.flatMap(s => s.items);
+
+for (const s of SECTIONS) {
+  const h = document.createElement('h2'); h.textContent = s.titre; liste.appendChild(h);
+  for (const it of s.items) {
+    const d = document.createElement('div'); d.className = 'cap'; d.id = it.id;
+    d.innerHTML = `<div><h3><span class="id">${it.id}</span>${it.cap} <span class="q">[${it.q}]</span></h3>
+      <p class="desc">${it.desc}</p><p class="impl">Implique : ${it.impl}</p><div class="excl" hidden></div></div>
+      <div class="choix" role="radiogroup" aria-label="${it.cap}">${CHOIX.map(([v, l]) =>
+        `<label class="${v}"><input type="radio" name="${it.id}" value="${v}"><span>${l}</span></label>`).join('')}</div>
+      <div class="com"><input type="text" placeholder="Commentaire (facultatif)" aria-label="Commentaire ${it.id}"></div>`;
+    liste.appendChild(d);
+    const radios = d.querySelectorAll('input[type=radio]');
+    radios.forEach(r => {
+      if (etat.rep[it.id] === r.value) r.checked = true;
+      r.addEventListener('change', () => { etat.rep[it.id] = r.value; sauver(); maj(); });
+    });
+    const c = d.querySelector('.com input');
+    c.value = etat.com[it.id] || '';
+    c.addEventListener('input', () => { etat.com[it.id] = c.value; sauver(); });
+  }
+}
+
+// Capacités exclusives : signaler si les deux sont voulues
+const GROUPES = { choix: "C13 et C14 s'excluent : un ordre unique ou une politique par donnée.", ia: "C23 et C24 s'excluent pour un même usage : précisez lequel en commentaire." };
+
+function maj() {
+  for (const it of tous) {
+    document.querySelectorAll(`#${it.id} .choix label`).forEach(l =>
+      l.classList.toggle('on', l.querySelector('input').checked));
+  }
+  for (const [g, msg] of Object.entries(GROUPES)) {
+    const ids = tous.filter(i => i.groupe === g).map(i => i.id);
+    const conflit = ids.every(id => etat.rep[id] === 'oui');
+    ids.forEach(id => { const e = document.querySelector(`#${id} .excl`); e.hidden = !conflit; e.textContent = msg; });
+  }
+}
+maj();
+
+</script>
+</body>
+</html>
