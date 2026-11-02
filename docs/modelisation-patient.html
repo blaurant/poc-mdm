@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Domaine Patient</title>
+<style>
+:root{--bleu:#0b3d6e;--bleu2:#24507f;--trait:#c9d3e0;--fond:#f2f5fa}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
+header{background:var(--bleu);color:#fff;padding:22px 32px}
+header h1{margin:0 0 6px;font-size:24px}
+header p{margin:0;opacity:.9}
+main{max-width:1440px;margin:0 auto;padding:16px 24px 50px}
+h2{color:var(--bleu);border-bottom:2px solid var(--trait);padding-bottom:4px;margin-top:34px}
+svg{width:100%;height:auto;display:block}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--trait);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:#e8eef6;color:var(--bleu)}
+code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);padding:0 3px;border-radius:3px}
+.note{background:var(--fond);border-left:4px solid var(--bleu2);padding:8px 12px}
+.leg span{display:inline-block;padding:1px 8px;border-radius:4px;margin-right:8px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Domaine Patient</h1>
+  <p>Concepts, attributs et liens · proposition du 02/11/2026, à valider avec le métier. Périmètre du dossier de conception : patient, organisation du patient, référentiel pseudo, consentement.</p>
+</header>
+<main>
+<p class="leg"><span style="background:#fff3dc;border:1px solid #c98a1a">Concept du domaine</span><span style="background:#f4f5f7;border:1px dashed #8a93a3">Concept de référence, géré ailleurs</span><span style="color:#24507f;font-weight:600">groupe [*]</span> groupe d'attributs, [*] = répétable · <span style="color:#b0462a;font-weight:700;font-family:Menlo,monospace">0..n</span> cardinalité : nombre d'objets à ce bout du lien pour un objet de l'autre bout.</p>
+
+<svg viewBox="0 0 1400 1080" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, Helvetica Neue, Arial, sans-serif" role="img" aria-label="Schéma du domaine Patient">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#24507f"/></marker></defs>
+  <style>
+    .t{font-size:16px;font-weight:700}
+    .s{font-size:12px;fill:#5b6475;font-style:italic}
+    .f{font-family:Menlo,Consolas,monospace;font-size:12.5px;fill:#1d2433}
+    .g{font-family:Menlo,Consolas,monospace;font-size:12.5px;fill:#24507f;font-weight:600}
+    .gs{font-family:Menlo,Consolas,monospace;font-size:12.5px;fill:#24507f}
+    .lab{font-size:13px;fill:#0b3d6e;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:4px}
+    .la{font-size:12px;fill:#5b6475;font-style:italic;paint-order:stroke;stroke:#fff;stroke-width:4px}
+    .nt{font-size:14px;font-weight:700;fill:#b0462a}
+    .nl{font-size:12.5px;fill:#1d2433}
+    .card{font-size:12px;fill:#b0462a;font-weight:700;font-family:Menlo,Consolas,monospace;paint-order:stroke;stroke:#fff;stroke-width:4px}
+  </style>
+<rect x="560" y="30" width="280" height="114" rx="9" fill="#f4f5f7" stroke="#8a93a3" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="574" y="52" class="t" fill="#5b6475">Contexte de pseudonymisation</text>
+<text x="574" y="69" class="s">référence · domaine Recherche</text>
+<text x="574" y="92" class="f">projet</text>
+<text x="574" y="110" class="f">finalite</text>
+<text x="574" y="128" class="f">responsable</text>
+<rect x="1040" y="30" width="330" height="96" rx="9" fill="#f4f5f7" stroke="#8a93a3" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="1054" y="52" class="t" fill="#5b6475">Finalité</text>
+<text x="1054" y="69" class="s">référence · registre des traitements</text>
+<text x="1054" y="92" class="f">code : soin|recherche|EDS|partenaire</text>
+<text x="1054" y="110" class="f">libelle</text>
+<rect x="40" y="230" width="320" height="96" rx="9" fill="#fff8ea" stroke="#c98a1a" stroke-width="2"/>
+<text x="54" y="252" class="t" fill="#8a5a00">Identifiant</text>
+<text x="54" y="269" class="s">reçu de Simbad, maître des identités (Q8)</text>
+<text x="54" y="292" class="f">type : NIP|Simbad|INS</text>
+<text x="54" y="310" class="f">valeur</text>
+<rect x="560" y="230" width="280" height="80" rx="9" fill="#fff8ea" stroke="#c98a1a" stroke-width="2"/>
+<text x="574" y="252" class="t" fill="#8a5a00">Pseudonyme</text>
+<text x="574" y="276" class="f">valeur</text>
+<text x="574" y="294" class="f">date_creation</text>
+<rect x="1040" y="230" width="320" height="134" rx="9" fill="#fff8ea" stroke="#c98a1a" stroke-width="2"/>
+<text x="1054" y="252" class="t" fill="#8a5a00">Consentement</text>
+<text x="1054" y="276" class="f">statut : accordé|opposé|retiré</text>
+<text x="1054" y="294" class="f">date_recueil</text>
+<text x="1054" y="312" class="f">mode_recueil</text>
+<text x="1054" y="330" class="f">document</text>
+<text x="1054" y="348" class="f">recueilli_par</text>
+<rect x="470" y="450" width="460" height="278" rx="9" fill="#fff3dc" stroke="#c98a1a" stroke-width="3"/>
+<text x="484" y="472" class="t" fill="#8a5a00">Patient</text>
+<text x="484" y="496" class="f">sexe</text>
+<text x="484" y="514" class="f">date_naissance</text>
+<text x="484" y="532" class="f">statut_identite_ins :</text>
+<text x="500" y="550" class="gs">provisoire|récupérée|validée|qualifiée</text>
+<text x="484" y="568" class="g">noms [*] : usage (naissance, utilisé), nom,</text>
+<text x="500" y="586" class="gs">prénoms, prénom utilisé</text>
+<text x="484" y="604" class="g">adresses [*] : usage, lignes, code postal,</text>
+<text x="500" y="622" class="gs">ville, pays</text>
+<text x="484" y="640" class="g">coordonnees [*] : type, valeur, usage</text>
+<text x="484" y="658" class="f">langue</text>
+<text x="484" y="676" class="f">situation_familiale</text>
+<text x="484" y="694" class="f">profession</text>
+<text x="484" y="712" class="g">deces : date, lieu, cause, source</text>
+<rect x="40" y="560" width="300" height="132" rx="9" fill="#fff8ea" stroke="#c98a1a" stroke-width="2"/>
+<text x="54" y="582" class="t" fill="#8a5a00">Personne</text>
+<text x="54" y="599" class="s">contact du patient</text>
+<text x="54" y="622" class="f">nom</text>
+<text x="54" y="640" class="f">prenom</text>
+<text x="54" y="658" class="g">coordonnees [*]</text>
+<text x="54" y="676" class="g">adresse</text>
+<rect x="1060" y="560" width="300" height="98" rx="9" fill="#fff8ea" stroke="#c98a1a" stroke-width="2"/>
+<text x="1074" y="582" class="t" fill="#8a5a00">Couverture sociale</text>
+<text x="1074" y="606" class="f">type : AMO|AMC</text>
+<text x="1074" y="624" class="f">numero_adherent</text>
+<text x="1074" y="642" class="f">exoneration_ald</text>
+<rect x="40" y="950" width="250" height="96" rx="9" fill="#f4f5f7" stroke="#8a93a3" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="54" y="972" class="t" fill="#5b6475">Commune</text>
+<text x="54" y="989" class="s">référence · INSEE</text>
+<text x="54" y="1012" class="f">code_insee</text>
+<text x="54" y="1030" class="f">libelle</text>
+<rect x="380" y="950" width="250" height="96" rx="9" fill="#f4f5f7" stroke="#8a93a3" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="394" y="972" class="t" fill="#5b6475">Pays</text>
+<text x="394" y="989" class="s">référence · ISO</text>
+<text x="394" y="1012" class="f">code_iso</text>
+<text x="394" y="1030" class="f">libelle</text>
+<rect x="720" y="950" width="280" height="114" rx="9" fill="#f4f5f7" stroke="#8a93a3" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="734" y="972" class="t" fill="#5b6475">Professionnel de santé</text>
+<text x="734" y="989" class="s">référence · annuaire RPPS</text>
+<text x="734" y="1012" class="f">rpps</text>
+<text x="734" y="1030" class="f">nom</text>
+<text x="734" y="1048" class="f">specialite</text>
+<rect x="1090" y="950" width="270" height="114" rx="9" fill="#f4f5f7" stroke="#8a93a3" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="1104" y="972" class="t" fill="#5b6475">Organisme</text>
+<text x="1104" y="989" class="s">référence · assurance maladie</text>
+<text x="1104" y="1012" class="f">type : AMO|AMC</text>
+<text x="1104" y="1030" class="f">code</text>
+<text x="1104" y="1048" class="f">libelle</text>
+<line x1="470" y1="500" x2="300" y2="328" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="376" y="426" class="lab" text-anchor="middle">est identifié par</text>
+<text x="458" y="474" class="card" text-anchor="middle">1</text>
+<text x="326" y="340" class="card" text-anchor="middle">1..n</text>
+<line x1="700" y1="450" x2="700" y2="312" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="708" y="385" class="lab" text-anchor="start">a pour pseudonyme</text>
+<text x="687" y="424" class="card" text-anchor="middle">1</text>
+<text x="687" y="340" class="card" text-anchor="middle">0..n</text>
+<line x1="700" y1="230" x2="700" y2="146" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="708" y="192" class="lab" text-anchor="start">est émis pour</text>
+<text x="687" y="204" class="card" text-anchor="middle">0..n</text>
+<text x="687" y="174" class="card" text-anchor="middle">1</text>
+<line x1="930" y1="500" x2="1100" y2="366" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="1022" y="446" class="lab" text-anchor="middle">a exprimé</text>
+<text x="946" y="475" class="card" text-anchor="middle">1</text>
+<text x="1073" y="375" class="card" text-anchor="middle">0..n</text>
+<line x1="1180" y1="230" x2="1180" y2="128" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="1188" y="183" class="lab" text-anchor="start">porte sur</text>
+<text x="1167" y="204" class="card" text-anchor="middle">0..n</text>
+<text x="1167" y="156" class="card" text-anchor="middle">1</text>
+<line x1="930" y1="610" x2="1058" y2="610" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="994" y="602" class="lab" text-anchor="middle">est couvert par</text>
+<text x="960" y="627" class="card" text-anchor="middle">1</text>
+<text x="1034" y="627" class="card" text-anchor="middle">0..n</text>
+<line x1="1240" y1="658" x2="1240" y2="948" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="1232" y="807" class="lab" text-anchor="end">auprès de</text>
+<text x="1253" y="692" class="card" text-anchor="middle">0..n</text>
+<text x="1253" y="928" class="card" text-anchor="middle">1</text>
+<line x1="470" y1="640" x2="342" y2="640" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="406" y="656" class="lab" text-anchor="middle">a pour contact</text>
+<text x="406" y="672" class="la" text-anchor="middle">rôle</text>
+<text x="440" y="631" class="card" text-anchor="middle">0..n</text>
+<text x="366" y="631" class="card" text-anchor="middle">0..n</text>
+<line x1="560" y1="728" x2="200" y2="948" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="356" y="843" class="lab" text-anchor="middle">est né à</text>
+<text x="541" y="759" class="card" text-anchor="middle">0..n</text>
+<text x="227" y="951" class="card" text-anchor="middle">0..1</text>
+<line x1="660" y1="728" x2="520" y2="948" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="586" y="870" class="lab" text-anchor="middle">pays de naissance</text>
+<text x="586" y="886" class="la" text-anchor="middle">et nationalité (0..n)</text>
+<text x="633" y="750" class="card" text-anchor="middle">0..n</text>
+<text x="522" y="925" class="card" text-anchor="middle">0..1</text>
+<line x1="880" y1="728" x2="880" y2="948" stroke="#24507f" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="872" y="853" class="lab" text-anchor="end">est suivi par</text>
+<text x="872" y="869" class="la" text-anchor="end">rôle</text>
+<text x="893" y="762" class="card" text-anchor="middle">0..n</text>
+<text x="893" y="928" class="card" text-anchor="middle">0..n</text>
+<rect x="40" y="30" width="400" height="142" rx="9" fill="#fff" stroke="#b0462a" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="54" y="54" class="nt">Les périodes sont gérées par la base</text>
+<text x="54" y="76" class="nl">Aucun attribut « période » sur le modèle :</text>
+<text x="54" y="93" class="nl">une base bitemporelle date chaque ligne.</text>
+<text x="54" y="110" class="nl">• V (validité) : période d'un identifiant, d'une</text>
+<text x="54" y="127" class="nl">  adresse, d'un nom, d'une couverture, d'un lien.</text>
+<text x="54" y="144" class="nl">• S (système) : date à laquelle le MDM l'a su.</text>
+<text x="54" y="161" class="nl">D'où une ligne par élément daté.</text>
+</svg>
+
+<p class="note"><b>Pas d'attribut « période » : le temps est porté par une base bitemporelle.</b> Chaque ligne a un temps de validité (V : <code>_valid_from</code>, <code>_valid_to</code>) et un temps système (S). La période d'un identifiant, d'une adresse, d'un nom, d'une couverture ou d'un lien est donc le V de sa ligne ; la fin des droits d'une couverture est un <code>_valid_to</code> futur (à confirmer par un test). Le retrait d'un consentement est une nouvelle version au statut « retiré ».<br>
+<b>Condition : une ligne par élément daté.</b> La base date une ligne entière, pas les éléments d'une liste à l'intérieur. Chaque nom, adresse, coordonnée et lien est donc une ligne avec sa clé : patient + usage pour les noms et adresses, patient + type + usage pour les coordonnées, patient + rôle + personne (ou professionnel) pour les liens.<br>
+Restent des attributs car ce sont des valeurs, pas des périodes : dates de naissance et de décès, date de recueil d'un consentement (date du document).</p>
+<p class="note">Hors domaine : le poids, la taille, le tabac et les allergies sont rangés dans l'entité Observations / Examen clinique du dossier de conception.</p>
+
+<h2>Concepts du domaine</h2>
+<table>
+<tr><th>Concept</th><th>Attributs</th></tr>
+<tr><td><b>Patient</b></td><td>sexe ; date de naissance ; statut de l'identité INS (provisoire, récupérée, validée, qualifiée) ; <i>noms</i> [répétable : usage (naissance, utilisé), nom, prénoms, prénom utilisé] ; <i>adresses</i> [répétable : usage, lignes, code postal, ville, pays] ; <i>coordonnées</i> [répétable : type (téléphone, e-mail), valeur, usage] ; langue ; situation familiale ; profession ; <i>décès</i> [date, lieu, cause, source]</td></tr>
+<tr><td><b>Identifiant</b></td><td>type (NIP, Simbad, INS) ; valeur</td></tr>
+<tr><td><b>Pseudonyme</b></td><td>valeur ; date de création</td></tr>
+<tr><td><b>Consentement</b></td><td>statut (accordé, opposé, retiré) ; date de recueil ; mode de recueil ; document ; recueilli par</td></tr>
+<tr><td><b>Couverture sociale</b></td><td>type (AMO, AMC) ; numéro d'adhérent ; exonération (ALD)</td></tr>
+<tr><td><b>Personne</b> (contact)</td><td>nom ; prénom ; <i>coordonnées</i> [répétable] ; <i>adresse</i></td></tr>
+</table>
+<p><i>Italique</i> = groupe d'attributs, entre crochets ses champs.</p>
+
+<h2>Concepts de référence</h2>
+<table>
+<tr><th>Concept</th><th>Attributs</th><th>Origine</th></tr>
+<tr><td>Commune</td><td>code INSEE, libellé</td><td>référentiel INSEE</td></tr>
+<tr><td>Pays</td><td>code ISO, libellé</td><td>référentiel ISO</td></tr>
+<tr><td>Professionnel de santé</td><td>RPPS, nom, spécialité</td><td>annuaire santé (RPPS)</td></tr>
+<tr><td>Organisme</td><td>type (AMO, AMC), code, libellé</td><td>assurance maladie</td></tr>
+<tr><td>Contexte de pseudonymisation</td><td>projet, finalité, responsable</td><td>domaine Recherche</td></tr>
+<tr><td>Finalité</td><td>code (soin, recherche, EDS, partenaire), libellé</td><td>registre des traitements</td></tr>
+</table>
+
+<h2>Liens</h2>
+<table>
+<tr><th>Lien</th><th>Sens</th><th>Cardinalité</th><th>Attributs du lien</th></tr>
+<tr><td>est identifié par</td><td>Patient → Identifiant</td><td>1 → 1..n (un identifiant désigne 1 patient à une date)</td><td>—</td></tr>
+<tr><td>a pour pseudonyme</td><td>Patient → Pseudonyme</td><td>1 → 0..n</td><td>—</td></tr>
+<tr><td>est émis pour</td><td>Pseudonyme → Contexte de pseudonymisation</td><td>0..n → 1</td><td>—</td></tr>
+<tr><td>a exprimé</td><td>Patient → Consentement</td><td>1 → 0..n</td><td>—</td></tr>
+<tr><td>porte sur</td><td>Consentement → Finalité</td><td>0..n → 1</td><td>—</td></tr>
+<tr><td>est couvert par</td><td>Patient → Couverture sociale</td><td>1 → 0..n</td><td>—</td></tr>
+<tr><td>auprès de</td><td>Couverture sociale → Organisme</td><td>0..n → 1</td><td>—</td></tr>
+<tr><td>est suivi par</td><td>Patient → Professionnel de santé</td><td>0..n → 0..n</td><td>rôle (médecin traitant, médecin référent IGR)</td></tr>
+<tr><td>a pour contact</td><td>Patient → Personne</td><td>0..n → 0..n</td><td>rôle (personne de confiance, à prévenir, représentant légal)</td></tr>
+<tr><td>est né à</td><td>Patient → Commune</td><td>0..n → 0..1</td><td>—</td></tr>
+<tr><td>a pour pays de naissance, a pour nationalité</td><td>Patient → Pays</td><td>0..n → 0..1, et 0..n → 0..n</td><td>—</td></tr>
+</table>
+
+<h2>Points à trancher</h2>
+<ul>
+<li><b>Fusion de patients : hors du domaine</b>. Une fusion corrige un doublon de dossier, pas une propriété du patient. Elle est gérée dans Simbad, référentiel des identités (Q8) ; le domaine n'en voit que l'effet : un identifiant qui désigne un autre patient à partir d'une date (lien « est identifié par », daté par la base).</li>
+<li><b>Liens qui portent des attributs</b> : « est suivi par » et « a pour contact » portent un rôle. Ce sont des candidats à devenir des concepts, comme dans l'exemple de la question 18.</li>
+<li><b>Lien avec l'organisation</b> : faut-il relier le patient à une structure (service, comité d'organe) ? Ce serait utile pour les droits fondés sur l'affectation et pour le domaine Organisation.</li>
+</ul>
+</main>
+</body>
+</html>
