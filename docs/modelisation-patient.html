@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Domaine Patient</title>
 <style>
-:root{--bleu:#0b3d6e;--bleu2:#24507f;--trait:#c9d3e0;--fond:#f2f5fa}
+:root{--bleu:#0b3d6e;--bleu2:#24507f;--trait:#c9d3e0;--fond:#f2f5fa;--orange:#c98a1a;--gris:#5b6475}
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.5 -apple-system,'Helvetica Neue',Arial,sans-serif;color:#1d2433;background:#fff}
 header{background:var(--bleu);color:#fff;padding:22px 32px}
@@ -20,14 +20,47 @@ th{background:#e8eef6;color:var(--bleu)}
 code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);padding:0 3px;border-radius:3px}
 .note{background:var(--fond);border-left:4px solid var(--bleu2);padding:8px 12px}
 .leg span{display:inline-block;padding:1px 8px;border-radius:4px;margin-right:8px;font-size:13px}
+.doc{border:2px solid var(--orange);border-radius:9px;background:#fff8ea;padding:10px 14px;min-width:0}
+.doc.princ{border-width:3px;background:#fff3dc}
+.doc.refd{border:2px dashed #8a93a3;background:#f4f5f7}
+.doc h3{margin:0;font-size:16px;color:#8a5a00}
+.doc.refd h3{color:var(--gris)}
+.doc .role{margin:0 0 6px;font-size:12.5px;color:var(--gris);font-style:italic}
+pre.json{margin:0;overflow-x:auto;font:12.5px/1.5 Menlo,Consolas,monospace}
+.docs{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.pile{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.refs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px}
+@media (max-width:900px){.pile{grid-template-columns:minmax(0,1fr)}.refs{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:12px 16px 40px}header{padding:18px 16px}}
+@media (max-width:520px){.refs{grid-template-columns:minmax(0,1fr)}}
+.jg{background:#e3eefa;color:#1f5f99;font-weight:600}
+.jr{background:#f1ebfa;color:#6a3fb3;font-weight:600}
+[role="tabpanel"]:focus{outline:none}
+[role="tabpanel"]:focus-visible{outline:2px solid #c98a1a;outline-offset:4px}
+.onglets{display:flex;flex-wrap:wrap;gap:4px;border-bottom:2px solid var(--trait);margin:4px 0 16px}
+.onglets button{font:inherit;font-weight:600;color:var(--bleu2);background:#fff;border:1px solid var(--trait);border-bottom:none;border-radius:8px 8px 0 0;padding:8px 16px;cursor:pointer}
+.onglets button[aria-selected="true"]{background:var(--bleu);border-color:var(--bleu);color:#fff}
+.onglets button:focus-visible{outline:3px solid #c98a1a;outline-offset:1px}
+.comparaison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.forme{border:1px solid var(--trait);border-radius:9px;padding:6px 16px 12px}
+.forme h3{color:var(--bleu2);margin:8px 0}
+.forme h4{margin:10px 0 2px;font-size:14px}
+.plus{color:#1f6a40}.moins{color:#a13c20}
+.forme ul{margin:0;padding-left:20px}
+@media (max-width:900px){.comparaison{grid-template-columns:minmax(0,1fr)}}
+@media print{.onglets{display:none}[role="tabpanel"]{display:block!important}}
 </style>
 </head>
 <body>
 <header>
   <h1>Domaine Patient</h1>
-  <p>Concepts, attributs et liens · proposition du 02/11/2026, à valider avec le métier. Périmètre du dossier de conception : patient, organisation du patient, référentiel pseudo, consentement.</p>
 </header>
 <main>
+<div class="onglets" role="tablist" aria-label="Formes de modélisation">
+  <button type="button" role="tab" id="t-concepts" aria-controls="p-concepts" aria-selected="true">MCD relationnel</button>
+  <button type="button" role="tab" id="t-documents" aria-controls="p-documents" aria-selected="false">Documents</button>
+  <button type="button" role="tab" id="t-differences" aria-controls="p-differences" aria-selected="false">Différences</button>
+</div>
+<section id="p-concepts" role="tabpanel" aria-labelledby="t-concepts" tabindex="0">
 <p class="leg"><span style="background:#fff3dc;border:1px solid #c98a1a">Concept du domaine</span><span style="background:#f4f5f7;border:1px dashed #8a93a3">Concept de référence, géré ailleurs</span><span style="color:#24507f;font-weight:600;font-family:Menlo,monospace">texte bleu gras</span> = groupe d'attributs ; <code>[*]</code> = répétable (le patient peut en avoir plusieurs) · <span style="color:#b0462a;font-weight:700;font-family:Menlo,monospace">0..n</span> cardinalité : nombre d'objets à ce bout du lien pour un objet de l'autre bout.</p>
 
 <svg viewBox="0 0 1400 1080" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, Helvetica Neue, Arial, sans-serif" role="img" aria-label="Schéma du domaine Patient">
@@ -188,6 +221,261 @@ Restent des attributs car ce sont des valeurs, pas des périodes : dates de nais
 <li><b>Liens qui portent des attributs</b> : « est suivi par » et « a pour contact » portent un rôle. Ce sont des candidats à devenir des concepts, comme dans l'exemple de la question 18.</li>
 <li><b>Lien avec l'organisation</b> : faut-il relier le patient à une structure (service, comité d'organe) ? Ce serait utile pour les droits fondés sur l'affectation et pour le domaine Organisation.</li>
 </ul>
+</section>
+<section id="p-documents" role="tabpanel" aria-labelledby="t-documents" tabindex="0">
+<p class="note"><b>Principe.</b> Un groupe d'attributs reste <b>à l'intérieur</b> du document Patient. Un concept qui a sa propre vie (identifiant, pseudonyme, consentement, couverture, personne) est <b>un document à part</b>, relié par une référence. Les périodes restent gérées par la base : aucun document n'a d'attribut « période ».</p>
+
+<p class="leg"><span style="background:#fff3dc;border:1px solid #c98a1a">Document du domaine</span><span style="background:#f4f5f7;border:1px dashed #8a93a3">Document de référence, géré ailleurs</span><span class="jg">groupe imbriqué</span><span class="jr">référence vers un autre document</span></p>
+
+<h2>Les documents du domaine</h2>
+<div class="docs">
+<section class="doc princ">
+<h3>Patient</h3>
+<p class="role">document principal : ses groupes et ses liens à rôle sont imbriqués</p>
+<pre class="json">{
+  "id": "patient/P-0002",
+  "sexe": "M",
+  "date_naissance": "1955-07-02",
+  "statut_identite_ins": "qualifiée",
+  "langue": "fr",
+  "situation_familiale": "marié",
+  "profession": "retraité",
+  "<span class="jr">commune_naissance</span>": "<span class="jr">commune/75056</span>",
+  "<span class="jr">pays_naissance</span>": "<span class="jr">pays/FR</span>",
+  "<span class="jr">nationalites</span>": ["<span class="jr">pays/FR</span>"],
+  "<span class="jg">noms</span>": [
+    { "usage": "naissance", "nom": "GARNIER",
+      "prenoms": ["Michel", "André"], "prenom_utilise": "Michel" },
+    { "usage": "utilisé", "nom": "GARNIER",
+      "prenoms": ["Michel"], "prenom_utilise": "Michel" }
+  ],
+  "<span class="jg">adresses</span>": [
+    { "usage": "domicile", "lignes": ["12 rue des Exemples"],
+      "code_postal": "94800", "ville": "Villejuif", "pays": "FR" }
+  ],
+  "<span class="jg">coordonnees</span>": [
+    { "type": "téléphone", "valeur": "01 99 00 00 02", "usage": "domicile" },
+    { "type": "e-mail", "valeur": "m.garnier@exemple.org", "usage": "personnel" }
+  ],
+  "<span class="jg">deces</span>": null,
+  "<span class="jg">contacts</span>": [
+    { "role": "personne de confiance", "<span class="jr">personne</span>": "<span class="jr">personne/PE-0031</span>" }
+  ],
+  "<span class="jg">suivis</span>": [
+    { "role": "médecin traitant", "<span class="jr">professionnel</span>": "<span class="jr">professionnel/10000000002</span>" },
+    { "role": "médecin référent IGR", "<span class="jr">professionnel</span>": "<span class="jr">professionnel/10000000007</span>" }
+  ]
+}</pre>
+</section>
+
+<div class="pile">
+<section class="doc">
+<h3>Identifiant</h3>
+<p class="role">1..n par patient · reçu de Simbad</p>
+<pre class="json">{
+  "id": "identifiant/NIP-99000002",
+  "type": "NIP",
+  "valeur": "99000002",
+  "<span class="jr">patient</span>": "<span class="jr">patient/P-0002</span>"
+}</pre>
+</section>
+<section class="doc">
+<h3>Pseudonyme</h3>
+<p class="role">0..n par patient</p>
+<pre class="json">{
+  "id": "pseudonyme/PS-8841",
+  "valeur": "PS-8841",
+  "date_creation": "2026-06-15",
+  "<span class="jr">patient</span>": "<span class="jr">patient/P-0002</span>",
+  "<span class="jr">contexte</span>": "<span class="jr">contexte/ETUDE-01</span>"
+}</pre>
+</section>
+<section class="doc">
+<h3>Consentement</h3>
+<p class="role">0..n par patient</p>
+<pre class="json">{
+  "id": "consentement/C-0107",
+  "statut": "accordé",
+  "date_recueil": "2026-04-02",
+  "mode_recueil": "formulaire signé",
+  "document": "doc/FORM-0107",
+  "recueilli_par": "ARC-012",
+  "<span class="jr">patient</span>": "<span class="jr">patient/P-0002</span>",
+  "<span class="jr">finalite</span>": "<span class="jr">finalite/recherche</span>"
+}</pre>
+</section>
+<section class="doc">
+<h3>Couverture sociale</h3>
+<p class="role">0..n par patient</p>
+<pre class="json">{
+  "id": "couverture/CS-0450",
+  "type": "AMO",
+  "numero_adherent": "FICTIF-0450",
+  "exoneration_ald": true,
+  "<span class="jr">patient</span>": "<span class="jr">patient/P-0002</span>",
+  "<span class="jr">organisme</span>": "<span class="jr">organisme/AMO-FICTIF</span>"
+}</pre>
+</section>
+<section class="doc">
+<h3>Personne</h3>
+<p class="role">contact d'un ou de plusieurs patients</p>
+<pre class="json">{
+  "id": "personne/PE-0031",
+  "nom": "GARNIER",
+  "prenom": "Claire",
+  "<span class="jg">coordonnees</span>": [
+    { "type": "téléphone",
+      "valeur": "01 99 00 00 31",
+      "usage": "mobile" }
+  ],
+  "<span class="jg">adresse</span>": {
+    "lignes": ["12 rue des Exemples"],
+    "code_postal": "94800",
+    "ville": "Villejuif",
+    "pays": "FR"
+  }
+}</pre>
+</section>
+</div>
+</div>
+
+<h2>Les documents de référence</h2>
+<div class="refs">
+<section class="doc refd"><h3>Commune</h3><p class="role">INSEE</p>
+<pre class="json">{ "id": "commune/75056",
+  "code_insee": "75056",
+  "libelle": "Paris" }</pre></section>
+<section class="doc refd"><h3>Pays</h3><p class="role">ISO</p>
+<pre class="json">{ "id": "pays/FR",
+  "code_iso": "FR",
+  "libelle": "France" }</pre></section>
+<section class="doc refd"><h3>Professionnel de santé</h3><p class="role">annuaire RPPS</p>
+<pre class="json">{ "id": "professionnel/10000000002",
+  "rpps": "10000000002",
+  "nom": "MARTIN",
+  "specialite": "médecine générale" }</pre></section>
+<section class="doc refd"><h3>Organisme</h3><p class="role">assurance maladie</p>
+<pre class="json">{ "id": "organisme/AMO-FICTIF",
+  "type": "AMO",
+  "code": "AMO-FICTIF",
+  "libelle": "Caisse fictive" }</pre></section>
+<section class="doc refd"><h3>Contexte de pseudonymisation</h3><p class="role">domaine Recherche</p>
+<pre class="json">{ "id": "contexte/ETUDE-01",
+  "projet": "Étude fictive 01",
+  "finalite": "recherche",
+  "responsable": "Pôle data" }</pre></section>
+<section class="doc refd"><h3>Finalité</h3><p class="role">registre des traitements</p>
+<pre class="json">{ "id": "finalite/recherche",
+  "code": "recherche",
+  "libelle": "Recherche" }</pre></section>
+</div>
+
+<h2>Comment les liens deviennent des références</h2>
+<table>
+<tr><th>Lien du modèle</th><th>Forme en document</th><th>Pourquoi</th></tr>
+<tr><td>est identifié par, a pour pseudonyme, a exprimé, est couvert par</td><td>Référence <code>patient</code> portée par le document enfant</td><td>Leur nombre n'est pas borné et chacun évolue seul : en ajouter un ne modifie pas le document Patient.</td></tr>
+<tr><td>a pour contact, est suivi par</td><td>Liste imbriquée dans Patient : un rôle et une référence</td><td>Le rôle appartient au lien, et la personne ou le professionnel existe en dehors du patient.</td></tr>
+<tr><td>est né à, pays de naissance, nationalité</td><td>Référence simple portée par Patient</td><td>Elle pointe vers un référentiel externe.</td></tr>
+<tr><td>est émis pour, porte sur, auprès de</td><td>Référence portée par Pseudonyme, Consentement ou Couverture sociale</td><td>Un seul objet en face.</td></tr>
+</table>
+<p>Le sens du lien ne change pas, seul l'endroit où il est rangé change. Par exemple, « Patient est identifié par Identifiant » est rangé dans le document Identifiant.</p>
+</section>
+<section id="p-differences" role="tabpanel" aria-labelledby="t-differences" tabindex="0">
+<p class="note">Les deux formes décrivent <b>le même domaine</b> : mêmes concepts, mêmes attributs, mêmes liens. Elles diffèrent par ce qui est rangé ensemble, et donc par ce que la base date : une ligne par élément dans un cas, un document entier dans l'autre.</p>
+
+<h2>Les différences</h2>
+<table>
+<tr><th>Point</th><th>MCD relationnel</th><th>Documents</th></tr>
+<tr><td>Unité rangée et datée</td><td>Une ligne par élément : un nom, une adresse, un lien</td><td>Un document : Patient avec tous ses groupes imbriqués</td></tr>
+<tr><td>Groupes répétables</td><td>Une ligne par occurrence, avec sa clé (patient + usage)</td><td>Une liste à l'intérieur du document</td></tr>
+<tr><td>Liens à rôle (contact, suivi)</td><td>Une ligne par lien</td><td>Une liste imbriquée : un rôle et une référence</td></tr>
+<tr><td>Liens vers les concepts à part</td><td>Une ligne ou une référence, selon la mise en œuvre</td><td>Une référence <code>patient</code> dans le document enfant</td></tr>
+<tr><td>Lire un patient complet</td><td>Plusieurs lignes à assembler</td><td>Un seul document, plus les références à suivre si besoin</td></tr>
+<tr><td>Connaître l'adresse à une date</td><td>Lecture directe</td><td>Lecture directe : la version du document à cette date</td></tr>
+<tr><td>Savoir depuis quand vaut une adresse</td><td>Lecture directe de la période de sa ligne</td><td>À déduire en comparant les versions du document</td></tr>
+<tr><td>Une adresse change</td><td>Une seule ligne change</td><td>Nouvelle version de tout le document Patient</td></tr>
+<tr><td>Provenance et qualité de chaque valeur (PR03)</td><td>Portées par chaque ligne</td><td>À ajouter champ par champ dans le document</td></tr>
+<tr><td>Valeurs de chaque source séparées (PR04)</td><td>Une ligne par source</td><td>Un document par source, à consolider ensuite</td></tr>
+</table>
+
+<h2>Avantages et inconvénients</h2>
+<div class="comparaison">
+<section class="forme">
+<h3>MCD relationnel</h3>
+<h4 class="plus">Avantages</h4>
+<ul>
+<li>Chaque élément a sa propre période, lisible directement.</li>
+<li>Provenance et qualité se rangent valeur par valeur, comme le demandent PR03 et PR04.</li>
+<li>Un changement ne touche que l'élément concerné.</li>
+<li>Deux sources peuvent alimenter deux éléments du même patient sans se gêner.</li>
+<li>Un élément précis peut être corrigé ou effacé avec tout son historique.</li>
+</ul>
+<h4 class="moins">Inconvénients</h4>
+<ul>
+<li>Il faut assembler plusieurs lignes pour obtenir un patient complet.</li>
+<li>Une clé est à définir et à maintenir pour chaque élément répétable.</li>
+<li>Les données brutes sont moins lisibles pour une personne ou une IA.</li>
+</ul>
+</section>
+<section class="forme">
+<h3>Documents</h3>
+<h4 class="plus">Avantages</h4>
+<ul>
+<li>Un patient se lit d'un seul bloc, sans assemblage.</li>
+<li>La structure est lisible par une personne ou une IA.</li>
+<li>La forme est proche de ce qu'attendent les API et les sorties comme FHIR.</li>
+<li>Le contenu d'un patient à une date forme un tout cohérent.</li>
+</ul>
+<h4 class="moins">Inconvénients</h4>
+<ul>
+<li>Les éléments imbriqués n'ont pas de période propre.</li>
+<li>Le moindre changement crée une version de tout le document.</li>
+<li>Provenance et qualité par valeur alourdissent beaucoup le document.</li>
+<li>Si plusieurs sources alimentent le même document, il faut fusionner leurs écritures.</li>
+<li>Corriger ou effacer un seul élément imbriqué dans tout l'historique oblige à reprendre les versions du document.</li>
+</ul>
+</section>
+</div>
+
+<h2>Lecture proposée</h2>
+<p class="note">Utiliser chaque forme pour ce qu'elle fait le mieux. <b>Conserver</b> les valeurs sources en lignes, pour garder la période, la provenance et la qualité de chaque valeur. <b>Restituer</b> un patient consolidé en document aux applications et aux IA, calculé à la lecture. Cette proposition reste à valider.</p>
+
+<p><b>Note :</b> la fusion de patients reste hors du domaine (gérée dans Simbad) ; le poids, la taille, le tabac et les allergies relèvent des Observations.</p>
+</section>
 </main>
+<script>
+(function () {
+  var onglets = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function choisir(id, focus) {
+    onglets.forEach(function (o) {
+      var actif = o.getAttribute('aria-controls') === id;
+      o.setAttribute('aria-selected', actif ? 'true' : 'false');
+      o.tabIndex = actif ? 0 : -1;
+      document.getElementById(o.getAttribute('aria-controls')).hidden = !actif;
+      if (actif && focus) o.focus();
+    });
+  }
+  function depuisAdresse() {
+    var id = 'p-' + location.hash.slice(1);
+    choisir(onglets.some(function (o) { return o.getAttribute('aria-controls') === id; }) ? id : 'p-concepts');
+  }
+  onglets.forEach(function (o, i) {
+    o.addEventListener('click', function () {
+      history.replaceState(null, '', '#' + o.getAttribute('aria-controls').slice(2));
+      choisir(o.getAttribute('aria-controls'));
+    });
+    o.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var c = onglets[(i + d + onglets.length) % onglets.length];
+      history.replaceState(null, '', '#' + c.getAttribute('aria-controls').slice(2));
+      choisir(c.getAttribute('aria-controls'), true);
+    });
+  });
+  window.addEventListener('hashchange', depuisAdresse);
+  depuisAdresse();
+})();
+</script>
 </body>
 </html>
