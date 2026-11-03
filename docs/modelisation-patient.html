@@ -28,7 +28,7 @@ code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);
   <p>Concepts, attributs et liens · proposition du 02/11/2026, à valider avec le métier. Périmètre du dossier de conception : patient, organisation du patient, référentiel pseudo, consentement.</p>
 </header>
 <main>
-<p class="leg"><span style="background:#fff3dc;border:1px solid #c98a1a">Concept du domaine</span><span style="background:#f4f5f7;border:1px dashed #8a93a3">Concept de référence, géré ailleurs</span><span style="color:#24507f;font-weight:600">groupe [*]</span> groupe d'attributs, [*] = répétable · <span style="color:#b0462a;font-weight:700;font-family:Menlo,monospace">0..n</span> cardinalité : nombre d'objets à ce bout du lien pour un objet de l'autre bout.</p>
+<p class="leg"><span style="background:#fff3dc;border:1px solid #c98a1a">Concept du domaine</span><span style="background:#f4f5f7;border:1px dashed #8a93a3">Concept de référence, géré ailleurs</span><span style="color:#24507f;font-weight:600;font-family:Menlo,monospace">texte bleu gras</span> = groupe d'attributs ; <code>[*]</code> = répétable (le patient peut en avoir plusieurs) · <span style="color:#b0462a;font-weight:700;font-family:Menlo,monospace">0..n</span> cardinalité : nombre d'objets à ce bout du lien pour un objet de l'autre bout.</p>
 
 <svg viewBox="0 0 1400 1080" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, Helvetica Neue, Arial, sans-serif" role="img" aria-label="Schéma du domaine Patient">
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#24507f"/></marker></defs>
@@ -182,46 +182,7 @@ code{font-family:Menlo,Consolas,monospace;font-size:13px;background:var(--fond);
 Restent des attributs car ce sont des valeurs, pas des périodes : dates de naissance et de décès, date de recueil d'un consentement (date du document).</p>
 <p class="note">Hors domaine : le poids, la taille, le tabac et les allergies sont rangés dans l'entité Observations / Examen clinique du dossier de conception.</p>
 
-<h2>Concepts du domaine</h2>
-<table>
-<tr><th>Concept</th><th>Attributs</th></tr>
-<tr><td><b>Patient</b></td><td>sexe ; date de naissance ; statut de l'identité INS (provisoire, récupérée, validée, qualifiée) ; <i>noms</i> [répétable : usage (naissance, utilisé), nom, prénoms, prénom utilisé] ; <i>adresses</i> [répétable : usage, lignes, code postal, ville, pays] ; <i>coordonnées</i> [répétable : type (téléphone, e-mail), valeur, usage] ; langue ; situation familiale ; profession ; <i>décès</i> [date, lieu, cause, source]</td></tr>
-<tr><td><b>Identifiant</b></td><td>type (NIP, Simbad, INS) ; valeur</td></tr>
-<tr><td><b>Pseudonyme</b></td><td>valeur ; date de création</td></tr>
-<tr><td><b>Consentement</b></td><td>statut (accordé, opposé, retiré) ; date de recueil ; mode de recueil ; document ; recueilli par</td></tr>
-<tr><td><b>Couverture sociale</b></td><td>type (AMO, AMC) ; numéro d'adhérent ; exonération (ALD)</td></tr>
-<tr><td><b>Personne</b> (contact)</td><td>nom ; prénom ; <i>coordonnées</i> [répétable] ; <i>adresse</i></td></tr>
-</table>
-<p><i>Italique</i> = groupe d'attributs, entre crochets ses champs.</p>
-
-<h2>Concepts de référence</h2>
-<table>
-<tr><th>Concept</th><th>Attributs</th><th>Origine</th></tr>
-<tr><td>Commune</td><td>code INSEE, libellé</td><td>référentiel INSEE</td></tr>
-<tr><td>Pays</td><td>code ISO, libellé</td><td>référentiel ISO</td></tr>
-<tr><td>Professionnel de santé</td><td>RPPS, nom, spécialité</td><td>annuaire santé (RPPS)</td></tr>
-<tr><td>Organisme</td><td>type (AMO, AMC), code, libellé</td><td>assurance maladie</td></tr>
-<tr><td>Contexte de pseudonymisation</td><td>projet, finalité, responsable</td><td>domaine Recherche</td></tr>
-<tr><td>Finalité</td><td>code (soin, recherche, EDS, partenaire), libellé</td><td>registre des traitements</td></tr>
-</table>
-
-<h2>Liens</h2>
-<table>
-<tr><th>Lien</th><th>Sens</th><th>Cardinalité</th><th>Attributs du lien</th></tr>
-<tr><td>est identifié par</td><td>Patient → Identifiant</td><td>1 → 1..n (un identifiant désigne 1 patient à une date)</td><td>—</td></tr>
-<tr><td>a pour pseudonyme</td><td>Patient → Pseudonyme</td><td>1 → 0..n</td><td>—</td></tr>
-<tr><td>est émis pour</td><td>Pseudonyme → Contexte de pseudonymisation</td><td>0..n → 1</td><td>—</td></tr>
-<tr><td>a exprimé</td><td>Patient → Consentement</td><td>1 → 0..n</td><td>—</td></tr>
-<tr><td>porte sur</td><td>Consentement → Finalité</td><td>0..n → 1</td><td>—</td></tr>
-<tr><td>est couvert par</td><td>Patient → Couverture sociale</td><td>1 → 0..n</td><td>—</td></tr>
-<tr><td>auprès de</td><td>Couverture sociale → Organisme</td><td>0..n → 1</td><td>—</td></tr>
-<tr><td>est suivi par</td><td>Patient → Professionnel de santé</td><td>0..n → 0..n</td><td>rôle (médecin traitant, médecin référent IGR)</td></tr>
-<tr><td>a pour contact</td><td>Patient → Personne</td><td>0..n → 0..n</td><td>rôle (personne de confiance, à prévenir, représentant légal)</td></tr>
-<tr><td>est né à</td><td>Patient → Commune</td><td>0..n → 0..1</td><td>—</td></tr>
-<tr><td>a pour pays de naissance, a pour nationalité</td><td>Patient → Pays</td><td>0..n → 0..1, et 0..n → 0..n</td><td>—</td></tr>
-</table>
-
-<h2>Points à trancher</h2>
+<p><b>Note :</b></p>
 <ul>
 <li><b>Fusion de patients : hors du domaine</b>. Une fusion corrige un doublon de dossier, pas une propriété du patient. Elle est gérée dans Simbad, référentiel des identités (Q8) ; le domaine n'en voit que l'effet : un identifiant qui désigne un autre patient à partir d'une date (lien « est identifié par », daté par la base).</li>
 <li><b>Liens qui portent des attributs</b> : « est suivi par » et « a pour contact » portent un rôle. Ce sont des candidats à devenir des concepts, comme dans l'exemple de la question 18.</li>
